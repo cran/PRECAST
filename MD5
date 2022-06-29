@@ -1,12 +1,12 @@
-d194c7dd4f4779f3c3565d6bdec2a6d7 *DESCRIPTION
-661025b228a3a44f1a0ba03d3721924b *NAMESPACE
+599aaead0fa367aec31f9400fa6bf113 *DESCRIPTION
+006e677cf6d0a708a6357f83b081c897 *NAMESPACE
 eb88f4589f5dcd30311fe9e537e105e3 *R/RcppExports.R
 0a4c63e69b371048b1b9c732784c2c6b *R/SetClass.R
-52a37469c923c8aec1fbeff374308c2d *R/Visualization.R
-6664dfc865389ca0cb7334aaea523820 *R/global.R
-a636ea5203d7a35a09c9b42b8cb72219 *R/main.R
+151fce17757e6e26fb213dc76bbc4ef3 *R/Visualization.R
+22aba2cbc71bd12853ddd5a2119ff5b7 *R/global.R
+c1c02cd283f8c6ac3bb304cb452959ea *R/main.R
 779b16d117a8a4bb8c6e71689777795c *R/measures.R
-b77fa9762d147b2408e171c3578a3d0f *README.md
+07d82c3da63a6d04f5e2cf62f2e96ba6 *README.md
 836f789c1a3c09d36717c39cf7878eb6 *build/vignette.rds
 80c2cf3ac7b6e97dbae2a4c4e0c120ed *data/Human_HK_genes.rda
 5ac7ffd835bf8a56ef89ed8669052a8c *data/Mouse_HK_genes.rda
@@ -15,8 +15,8 @@ b77fa9762d147b2408e171c3578a3d0f *README.md
 216156010a63293a366111f1f5ba0ee4 *inst/doc/PRECAST.Rmd
 31cf69711b92f12530038c0f15d6ae9e *inst/doc/PRECAST.Simu.R
 5ed744fc7249b705b0164aad63960c70 *inst/doc/PRECAST.Simu.Rmd
-9c5fffc01d33d200825822c5d6d3bd82 *inst/doc/PRECAST.Simu.html
-67624fa33b1cf5141632368ee7fbca0d *inst/doc/PRECAST.html
+8e2787ed3e67d5610d653f9d1594150c *inst/doc/PRECAST.Simu.html
+9c76833ba5a29e59c4c3239b9838819e *inst/doc/PRECAST.html
 238c228d6d3fec83defb0f8118d4c8b8 *man/AddAdjList.Rd
 8b218c9baeae98cbc66ef63c4083b6d8 *man/AddParSetting.Rd
 55e01f7b42e2b7073b1487f6480542c8 *man/AddTSNE.Rd
@@ -34,7 +34,7 @@ aa182e393165884ac60984fbf4b6f07b *man/SpaPlot.Rd
 288088bc43dcced1afde08663445d44d *man/boxPlot.Rd
 f0950dacdbe07a81c2f11980be700f6b *man/coordinate_rotate.Rd
 0641cf188718d484fc33408118e9d99d *man/dimPlot.Rd
-a783cbb13295c049beba386b33f14d59 *man/doHeatmap.Rd
+46cb76107f16f1f972d2780be2eba9c4 *man/doHeatmap.Rd
 34e4ad136879fe02831b740504de638b *man/featurePlot.Rd
 316671e6a90d49a25e1e8edcaff8c6d0 *man/firstup.Rd
 c637c2ea19732989e3443167774448f2 *man/gendata_seulist.Rd
@@ -44,7 +44,6 @@ b20009fea7a361332a9d5db4ba6ca6ac *man/getAdj_reg.Rd
 ff99782b238ecb55fd7b63e1934bc01c *man/model_set.Rd
 c45675d3ac2f9ae70075e049b4ffd7d7 *man/plot_RGB.Rd
 eb950b61aa59b6e5039d9963a83ef9fb *man/plot_scatter.Rd
-a5dfcf5c0e4994f8232278e29283d2a2 *man/ridgePlot.Rd
 b801d40f5c117a39f76edb8ee707cb63 *man/selectIntFeatures.Rd
 d7de93d231f72427d651740bc86cc0d5 *man/selectModel.Rd
 5a90c92eb32b61d1a69faeef7221489f *man/volinPlot_real.Rd

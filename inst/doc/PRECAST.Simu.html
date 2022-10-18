@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wei Liu" />
 
-<meta name="date" content="2022-07-11" />
+<meta name="date" content="2022-10-18" />
 
 <title>PRECAST: simulation</title>
 
@@ -318,106 +318,112 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">PRECAST: simulation</h1>
 <h4 class="author">Wei Liu</h4>
-<h4 class="date">2022-07-11</h4>
+<h4 class="date">2022-10-18</h4>
 
 
 
-<div id="generate-the-simulated-data" class="section level2">
-<h2>Generate the simulated data</h2>
-<p>First, we generate the multiple spatial transcriptomics data with lattice neighborhood, i.e. ST platform by using the function <code>gendata_seulist</code> in <code>PRECAST</code> package.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(Seurat)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(PRECAST)</a>
-<a class="sourceLine" id="cb1-3" title="3">seuList &lt;-<span class="st"> </span><span class="kw">gendata_seulist</span>(<span class="dt">height1=</span><span class="dv">20</span>, <span class="dt">width1=</span><span class="dv">20</span>, <span class="dt">height2=</span><span class="dv">24</span>, <span class="dt">width2=</span><span class="dv">25</span>,<span class="dt">p=</span><span class="dv">200</span>, <span class="dt">K=</span><span class="dv">4</span>, <span class="dt">alpha=</span><span class="dv">20</span>, <span class="dt">sigma2=</span><span class="fl">0.1</span>)</a>
-<a class="sourceLine" id="cb1-4" title="4">seuList</a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="kw">head</span>(seuList[[<span class="dv">1</span>]]) </a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="co">## Must include the columns named &quot;row&quot; and &quot;col&quot; for saving the spatial coordinates</span></a></code></pre></div>
+<p>This vignette introduces the PRECAST workflow for the analysis of integrating multiple spatial transcriptomics dataset. The workflow consists of three steps</p>
+<ul>
+<li>Independent preprocessing and model setting</li>
+<li>Probabilistic embedding, clustering and alignment using PRECAST model</li>
+<li>Downstream analysis (i.e. visualization of clusters and embeddings, combined differential expression analysis)</li>
+</ul>
+<p>We demonstrate the use of PRECAST to three simulated Visium data that are <a href="https://github.com/feiyoung/PRECAST/tree/main/vignettes_data">here</a>, which can be downloaded to the current working path by the following command:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">githubURL &lt;-<span class="st"> &quot;https://github.com/feiyoung/PRECAST/blob/main/vignettes_data/data_simu.rda?raw=true&quot;</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">download.file</span>(githubURL,<span class="st">&quot;data_simu.rda&quot;</span>,<span class="dt">mode=</span><span class="st">&#39;wb&#39;</span>)</a></code></pre></div>
+<p>Then load to R</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">load</span>(<span class="st">&quot;data_simu.rda&quot;</span>)</a></code></pre></div>
+<p>The package can be loaded with the command:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">library</span>(PRECAST)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">library</span>(Seurat)</a></code></pre></div>
+<div id="load-the-simulated-data" class="section level2">
+<h2>Load the simulated data</h2>
+<p>First, we view the the three simulated spatial transcriptomics data with Visium platform.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"></a>
+<a class="sourceLine" id="cb4-2" title="2">data_simu <span class="co">## a list including three Seurat object with default assay: RNA</span></a></code></pre></div>
+<p>Check the content in <code>data_simu</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">head</span>(data_simu[[<span class="dv">1</span>]])</a></code></pre></div>
 </div>
 <div id="fit-precast-using-simulated-data" class="section level2">
 <h2>Fit PRECAST using simulated data</h2>
 <div id="prepare-the-precastobject-with-preprocessing-step." class="section level3">
 <h3>Prepare the PRECASTObject with preprocessing step.</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">## Create </span></a>
-<a class="sourceLine" id="cb2-2" title="2">PRECASTObj &lt;-<span class="st">  </span><span class="kw">CreatePRECASTObject</span>(seuList)</a></code></pre></div>
+<p>In this simulate dataset, we don’t require to select genes, thus, we set <code>customGenelist=row.names(data_simu[[1]])</code></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co">## Create </span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="kw">set.seed</span>(<span class="dv">2022</span>)</a>
+<a class="sourceLine" id="cb6-4" title="4">PRECASTObj &lt;-<span class="st">  </span><span class="kw">CreatePRECASTObject</span>(data_simu, <span class="dt">customGenelist=</span><span class="kw">row.names</span>(data_simu[[<span class="dv">1</span>]]))</a></code></pre></div>
 </div>
 <div id="add-the-model-setting" class="section level3">
 <h3>Add the model setting</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co">## check the number of genes/features after filtering step</span></a>
-<a class="sourceLine" id="cb3-2" title="2">PRECASTObj<span class="op">@</span>seulist</a>
-<a class="sourceLine" id="cb3-3" title="3"></a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="co">## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.</span></a>
-<a class="sourceLine" id="cb3-5" title="5">PRECASTObj &lt;-<span class="st">  </span><span class="kw">AddAdjList</span>(PRECASTObj, <span class="dt">platform =</span> <span class="st">&quot;ST&quot;</span>)</a>
-<a class="sourceLine" id="cb3-6" title="6"></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the information in the algorithm.</span></a>
-<a class="sourceLine" id="cb3-8" title="8">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddParSetting</span>(PRECASTObj, <span class="dt">Sigma_equal=</span><span class="ot">TRUE</span>, <span class="dt">verbose=</span><span class="ot">TRUE</span>, <span class="dt">seed=</span><span class="dv">2022</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">## check the number of genes/features after filtering step</span></a>
+<a class="sourceLine" id="cb7-2" title="2">PRECASTObj<span class="op">@</span>seulist</a>
+<a class="sourceLine" id="cb7-3" title="3"></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.</span></a>
+<a class="sourceLine" id="cb7-5" title="5">PRECASTObj &lt;-<span class="st">  </span><span class="kw">AddAdjList</span>(PRECASTObj, <span class="dt">platform =</span> <span class="st">&quot;Visium&quot;</span>)</a>
+<a class="sourceLine" id="cb7-6" title="6"></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the information in the algorithm.</span></a>
+<a class="sourceLine" id="cb7-8" title="8">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddParSetting</span>(PRECASTObj, <span class="dt">Sigma_equal=</span><span class="ot">FALSE</span>, <span class="dt">maxIter=</span><span class="dv">30</span>, <span class="dt">verbose=</span><span class="ot">TRUE</span>)</a></code></pre></div>
 </div>
 <div id="fit-precast" class="section level3">
 <h3>Fit PRECAST</h3>
-<p>For function <code>PRECAST</code>, users can specify the number of clusters <span class="math inline">\(K\)</span> or set <code>K</code> to be an integer vector by using modified BIC(MBIC) to determine <span class="math inline">\(K\)</span>. First, we try using user-specified number of clusters. For convenience, we give a single K here.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co">### Given K</span></a>
-<a class="sourceLine" id="cb4-2" title="2">PRECASTObj &lt;-<span class="st"> </span><span class="kw">PRECAST</span>(PRECASTObj, <span class="dt">K=</span><span class="dv">5</span>)</a></code></pre></div>
+<p>For function <code>PRECAST</code>, users can specify the number of clusters <span class="math inline">\(K\)</span> or set <code>K</code> to be an integer vector by using modified BIC(MBIC) to determine <span class="math inline">\(K\)</span>. For convenience, we give a single K here.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">### Given K</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">set.seed</span>(<span class="dv">2022</span>)</a>
+<a class="sourceLine" id="cb8-3" title="3">PRECASTObj &lt;-<span class="st"> </span><span class="kw">PRECAST</span>(PRECASTObj, <span class="dt">K=</span><span class="dv">7</span>)</a></code></pre></div>
 <p>Select a best model and use ARI to check the performance of clustering</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co">## backup the fitting results in resList</span></a>
-<a class="sourceLine" id="cb5-2" title="2">resList &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>resList</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="co"># PRECASTObj@resList &lt;- resList</span></a>
-<a class="sourceLine" id="cb5-4" title="4">PRECASTObj &lt;-<span class="st"> </span><span class="kw">selectModel</span>(PRECASTObj)</a>
-<a class="sourceLine" id="cb5-5" title="5">true_cluster &lt;-<span class="st"> </span><span class="kw">lapply</span>(seuList, <span class="cf">function</span>(x) x<span class="op">$</span>true_cluster)</a>
-<a class="sourceLine" id="cb5-6" title="6"><span class="kw">str</span>(true_cluster)</a>
-<a class="sourceLine" id="cb5-7" title="7">mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(<span class="kw">unlist</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster), <span class="kw">unlist</span>(true_cluster))</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co">## backup the fitting results in resList</span></a>
+<a class="sourceLine" id="cb9-2" title="2">resList &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>resList</a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="co"># PRECASTObj@resList &lt;- resList</span></a>
+<a class="sourceLine" id="cb9-4" title="4">PRECASTObj &lt;-<span class="st"> </span><span class="kw">selectModel</span>(PRECASTObj)</a>
+<a class="sourceLine" id="cb9-5" title="5">true_cluster &lt;-<span class="st"> </span><span class="kw">lapply</span>(data_simu, <span class="cf">function</span>(x) x<span class="op">$</span>true_cluster)</a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="kw">str</span>(true_cluster)</a>
+<a class="sourceLine" id="cb9-7" title="7">mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(<span class="kw">unlist</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster), <span class="kw">unlist</span>(true_cluster))</a></code></pre></div>
 <p>Integrate the two samples by the function <code>IntegrateSpaData</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">IntegrateSpaData</span>(PRECASTObj, <span class="dt">species=</span><span class="st">&#39;unknown&#39;</span>)</a>
-<a class="sourceLine" id="cb6-2" title="2">seuInt </a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="co">## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.</span></a></code></pre></div>
-<p>Show the spatial scatter plot for clusters</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">p12 &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">batch=</span><span class="ot">NULL</span>,<span class="dt">point_size=</span><span class="dv">2</span>, <span class="dt">combine=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb7-2" title="2">p12</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="co"># users can plot each sample by setting combine=FALSE</span></a></code></pre></div>
-<p>Show the spatial UMAP/tNSE RGB plot</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">AddUMAP</span>(seuInt) </a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="kw">SpaPlot</span>(seuInt, <span class="dt">batch=</span><span class="ot">NULL</span>,<span class="dt">item=</span><span class="st">&#39;RGB_UMAP&#39;</span>,<span class="dt">point_size=</span><span class="dv">2</span>, <span class="dt">combine=</span><span class="ot">TRUE</span>, <span class="dt">text_size=</span><span class="dv">15</span>)</a>
-<a class="sourceLine" id="cb8-3" title="3"></a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="co">#seuInt &lt;- AddTSNE(seuInt) </span></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="co">#SpaPlot(seuInt, batch=NULL,item=&#39;RGB_TSNE&#39;,point_size=2, combine=T, text_size=15)</span></a></code></pre></div>
-<p>Show the tSNE plot based on the extracted features from PRECAST to check the performance of integration.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">AddTSNE</span>(seuInt, <span class="dt">n_comp =</span> <span class="dv">2</span>) </a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="kw">library</span>(patchwork)</a>
-<a class="sourceLine" id="cb9-3" title="3">cols_cluster &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;#E04D50&quot;</span>, <span class="st">&quot;#4374A5&quot;</span>, <span class="st">&quot;#F08A21&quot;</span>,<span class="st">&quot;#2AB673&quot;</span>, <span class="st">&quot;#FCDDDE&quot;</span>,  <span class="st">&quot;#70B5B0&quot;</span>, <span class="st">&quot;#DFE0EE&quot;</span> ,<span class="st">&quot;#D0B14C&quot;</span>)</a>
-<a class="sourceLine" id="cb9-4" title="4">p1 &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt,  <span class="dt">font_family=</span><span class="st">&#39;serif&#39;</span>, <span class="dt">cols=</span>cols_cluster) <span class="co"># Times New Roman</span></a>
-<a class="sourceLine" id="cb9-5" title="5">p2 &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt, <span class="dt">item=</span><span class="st">&#39;batch&#39;</span>, <span class="dt">point_size =</span> <span class="dv">1</span>,  <span class="dt">font_family=</span><span class="st">&#39;serif&#39;</span>)</a>
-<a class="sourceLine" id="cb9-6" title="6">p1 <span class="op">+</span><span class="st"> </span>p2 </a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="co"># It is noted that only sample batch 1 has cluster 4, and only sample batch 2 has cluster 7. </span></a></code></pre></div>
-<p>Show the UMAP plot based on the extracted features from PRECAST.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">dimPlot</span>(seuInt, <span class="dt">reduction =</span> <span class="st">&#39;UMAP3&#39;</span>, <span class="dt">item=</span><span class="st">&#39;cluster&#39;</span>, <span class="dt">cols=</span>cols_cluster, <span class="dt">font_family=</span><span class="st">&#39;serif&#39;</span>)</a></code></pre></div>
-<p>Users can also use the visualization functions in Seurat package:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">DimPlot</span>(seuInt, <span class="dt">reduction =</span> <span class="st">&#39;position&#39;</span>)</a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="kw">DimPlot</span>(seuInt, <span class="dt">reduction =</span> <span class="st">&#39;tSNE&#39;</span>)</a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="kw">DimPlot</span>(seuInt, <span class="dt">reduction =</span> <span class="st">&#39;PRECAST&#39;</span>)</a></code></pre></div>
-<p>Combined differential expression analysis</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">dat_deg &lt;-<span class="st"> </span><span class="kw">FindAllMarkers</span>(seuInt)</a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb12-3" title="3">n &lt;-<span class="st"> </span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb12-4" title="4">dat_deg <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb12-5" title="5"><span class="st">  </span><span class="kw">group_by</span>(cluster) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb12-6" title="6"><span class="st">  </span><span class="kw">top_n</span>(<span class="dt">n =</span> n, <span class="dt">wt =</span> avg_log2FC) -&gt;<span class="st"> </span>top10</a>
-<a class="sourceLine" id="cb12-7" title="7"></a>
-<a class="sourceLine" id="cb12-8" title="8">seuInt &lt;-<span class="st"> </span><span class="kw">ScaleData</span>(seuInt)</a>
-<a class="sourceLine" id="cb12-9" title="9">seus &lt;-<span class="st"> </span><span class="kw">subset</span>(seuInt, <span class="dt">downsample =</span> <span class="dv">400</span>)</a>
-<a class="sourceLine" id="cb12-10" title="10">color_id &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">levels</span>(<span class="kw">Idents</span>(seus)))</a>
-<a class="sourceLine" id="cb12-11" title="11"></a>
-<a class="sourceLine" id="cb12-12" title="12"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb12-13" title="13"></a>
-<a class="sourceLine" id="cb12-14" title="14"><span class="co">## HeatMap</span></a>
-<a class="sourceLine" id="cb12-15" title="15">p1 &lt;-<span class="st"> </span><span class="kw">doHeatmap</span>(seus, <span class="dt">features =</span> top10<span class="op">$</span>gene, <span class="dt">cell_label=</span> <span class="st">&quot;Domain&quot;</span>,</a>
-<a class="sourceLine" id="cb12-16" title="16">                <span class="dt">grp_label =</span> F, <span class="dt">grp_color =</span> cols_cluster,</a>
-<a class="sourceLine" id="cb12-17" title="17">                <span class="dt">pt_size=</span><span class="dv">6</span>,<span class="dt">slot =</span> <span class="st">&#39;scale.data&#39;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb12-18" title="18"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.text =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">16</span>),</a>
-<a class="sourceLine" id="cb12-19" title="19">        <span class="dt">legend.title =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">18</span>, <span class="dt">face=</span><span class="st">&#39;bold&#39;</span>),</a>
-<a class="sourceLine" id="cb12-20" title="20">        <span class="dt">axis.text.y =</span> <span class="kw">element_text</span>(<span class="dt">size=</span><span class="dv">7</span>, <span class="dt">face=</span> <span class="st">&quot;italic&quot;</span>, <span class="dt">family=</span><span class="st">&#39;serif&#39;</span>))</a>
-<a class="sourceLine" id="cb12-21" title="21">p1</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"></a>
+<a class="sourceLine" id="cb10-2" title="2">seuInt &lt;-<span class="st"> </span><span class="kw">IntegrateSpaData</span>(PRECASTObj, <span class="dt">species=</span><span class="st">&#39;unknown&#39;</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3">seuInt </a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="co">## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.</span></a></code></pre></div>
 </div>
+</div>
+<div id="visualization" class="section level2">
+<h2>Visualization</h2>
+<p>Show the spatial scatter plot for clusters</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">p12 &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">batch=</span><span class="ot">NULL</span>,<span class="dt">point_size=</span><span class="dv">2</span>, <span class="dt">combine=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb11-2" title="2">p12</a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="co"># users can plot each sample by setting combine=FALSE</span></a></code></pre></div>
+<p>Show the spatial UMAP/tNSE RGB plot</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">AddUMAP</span>(seuInt) </a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="kw">SpaPlot</span>(seuInt, <span class="dt">batch=</span><span class="ot">NULL</span>,<span class="dt">item=</span><span class="st">&#39;RGB_UMAP&#39;</span>,<span class="dt">point_size=</span><span class="dv">2</span>, <span class="dt">combine=</span><span class="ot">TRUE</span>, <span class="dt">text_size=</span><span class="dv">15</span>)</a>
+<a class="sourceLine" id="cb12-3" title="3"></a>
+<a class="sourceLine" id="cb12-4" title="4"><span class="co">#seuInt &lt;- AddTSNE(seuInt) </span></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="co">#SpaPlot(seuInt, batch=NULL,item=&#39;RGB_TSNE&#39;,point_size=2, combine=T, text_size=15)</span></a></code></pre></div>
+<p>Show the tSNE plot based on the extracted features from PRECAST to check the performance of integration.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">AddTSNE</span>(seuInt, <span class="dt">n_comp =</span> <span class="dv">2</span>) </a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw">library</span>(patchwork)</a>
+<a class="sourceLine" id="cb13-3" title="3">cols_cluster &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;#E04D50&quot;</span>, <span class="st">&quot;#4374A5&quot;</span>, <span class="st">&quot;#F08A21&quot;</span>,<span class="st">&quot;#2AB673&quot;</span>, <span class="st">&quot;#FCDDDE&quot;</span>,  <span class="st">&quot;#70B5B0&quot;</span>, <span class="st">&quot;#DFE0EE&quot;</span> ,<span class="st">&quot;#D0B14C&quot;</span>)</a>
+<a class="sourceLine" id="cb13-4" title="4">p1 &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt,  <span class="dt">font_family=</span><span class="st">&#39;serif&#39;</span>, <span class="dt">cols=</span>cols_cluster) <span class="co"># Times New Roman</span></a>
+<a class="sourceLine" id="cb13-5" title="5">p2 &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt, <span class="dt">item=</span><span class="st">&#39;batch&#39;</span>, <span class="dt">point_size =</span> <span class="dv">1</span>,  <span class="dt">font_family=</span><span class="st">&#39;serif&#39;</span>)</a>
+<a class="sourceLine" id="cb13-6" title="6">p1 <span class="op">+</span><span class="st"> </span>p2 </a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="co"># It is noted that only sample batch 1 has cluster 4, and only sample batch 2 has cluster 7. </span></a></code></pre></div>
+<p>Show the UMAP plot based on the extracted features from PRECAST.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">dimPlot</span>(seuInt, <span class="dt">reduction =</span> <span class="st">&#39;UMAP3&#39;</span>, <span class="dt">item=</span><span class="st">&#39;cluster&#39;</span>, <span class="dt">cols=</span>cols_cluster, <span class="dt">font_family=</span><span class="st">&#39;serif&#39;</span>)</a></code></pre></div>
+<p>Users can also use the visualization functions in Seurat package:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">DimPlot</span>(seuInt, <span class="dt">reduction =</span> <span class="st">&#39;position&#39;</span>)</a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="kw">DimPlot</span>(seuInt, <span class="dt">reduction =</span> <span class="st">&#39;tSNE&#39;</span>)</a></code></pre></div>
+<p>Combined differential expression analysis</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">dat_deg &lt;-<span class="st"> </span><span class="kw">FindAllMarkers</span>(seuInt)</a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb16-3" title="3">n &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb16-4" title="4">dat_deg <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="st">  </span><span class="kw">group_by</span>(cluster) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="st">  </span><span class="kw">top_n</span>(<span class="dt">n =</span> n, <span class="dt">wt =</span> avg_log2FC) -&gt;<span class="st"> </span>top10</a>
+<a class="sourceLine" id="cb16-7" title="7"></a>
+<a class="sourceLine" id="cb16-8" title="8"><span class="kw">head</span>(top10)</a></code></pre></div>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
 </div>
 
 

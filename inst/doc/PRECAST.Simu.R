@@ -4,18 +4,31 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----eval = FALSE-------------------------------------------------------------
-#  library(Seurat)
-#  library(PRECAST)
-#  seuList <- gendata_seulist(height1=20, width1=20, height2=24, width2=25,p=200, K=4, alpha=20, sigma2=0.1)
-#  seuList
-#  head(seuList[[1]])
-#  ## Must include the columns named "row" and "col" for saving the spatial coordinates
+## ----eval=FALSE---------------------------------------------------------------
+#  githubURL <- "https://github.com/feiyoung/PRECAST/blob/main/vignettes_data/data_simu.rda?raw=true"
+#  download.file(githubURL,"data_simu.rda",mode='wb')
 #  
 
 ## ----eval = FALSE-------------------------------------------------------------
+#  load("data_simu.rda")
+
+## ----eval = FALSE-------------------------------------------------------------
+#  library(PRECAST)
+#  library(Seurat)
+
+## ----eval = FALSE-------------------------------------------------------------
+#  
+#  data_simu ## a list including three Seurat object with default assay: RNA
+
+## ----eval= FALSE--------------------------------------------------------------
+#  head(data_simu[[1]])
+
+## ----eval = FALSE-------------------------------------------------------------
+#  
 #  ## Create
-#  PRECASTObj <-  CreatePRECASTObject(seuList)
+#  set.seed(2022)
+#  PRECASTObj <-  CreatePRECASTObject(data_simu, customGenelist=row.names(data_simu[[1]]))
+#  
 #  
 
 ## ----eval = FALSE-------------------------------------------------------------
@@ -23,14 +36,15 @@ knitr::opts_chunk$set(
 #  PRECASTObj@seulist
 #  
 #  ## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.
-#  PRECASTObj <-  AddAdjList(PRECASTObj, platform = "ST")
+#  PRECASTObj <-  AddAdjList(PRECASTObj, platform = "Visium")
 #  
 #  ## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the information in the algorithm.
-#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=TRUE, verbose=TRUE, seed=2022)
+#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, maxIter=30, verbose=TRUE)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  ### Given K
-#  PRECASTObj <- PRECAST(PRECASTObj, K=5)
+#  set.seed(2022)
+#  PRECASTObj <- PRECAST(PRECASTObj, K=7)
 #  
 
 ## ----eval = FALSE-------------------------------------------------------------
@@ -38,11 +52,12 @@ knitr::opts_chunk$set(
 #  resList <- PRECASTObj@resList
 #  # PRECASTObj@resList <- resList
 #  PRECASTObj <- selectModel(PRECASTObj)
-#  true_cluster <- lapply(seuList, function(x) x$true_cluster)
+#  true_cluster <- lapply(data_simu, function(x) x$true_cluster)
 #  str(true_cluster)
 #  mclust::adjustedRandIndex(unlist(PRECASTObj@resList$cluster), unlist(true_cluster))
 
 ## ----eval = FALSE-------------------------------------------------------------
+#  
 #  seuInt <- IntegrateSpaData(PRECASTObj, species='unknown')
 #  seuInt
 #  ## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.
@@ -74,30 +89,16 @@ knitr::opts_chunk$set(
 ## ----eval = FALSE-------------------------------------------------------------
 #  DimPlot(seuInt, reduction = 'position')
 #  DimPlot(seuInt, reduction = 'tSNE')
-#  DimPlot(seuInt, reduction = 'PRECAST')
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  dat_deg <- FindAllMarkers(seuInt)
 #  library(dplyr)
-#  n <- 10
+#  n <- 2
 #  dat_deg %>%
 #    group_by(cluster) %>%
 #    top_n(n = n, wt = avg_log2FC) -> top10
 #  
-#  seuInt <- ScaleData(seuInt)
-#  seus <- subset(seuInt, downsample = 400)
-#  color_id <- as.numeric(levels(Idents(seus)))
-#  
-#  library(ggplot2)
-#  
-#  ## HeatMap
-#  p1 <- doHeatmap(seus, features = top10$gene, cell_label= "Domain",
-#                  grp_label = F, grp_color = cols_cluster,
-#                  pt_size=6,slot = 'scale.data') +
-#    theme(legend.text = element_text(size=16),
-#          legend.title = element_text(size=18, face='bold'),
-#          axis.text.y = element_text(size=7, face= "italic", family='serif'))
-#  p1
+#  head(top10)
 #  
 
 ## ----eval = FALSE-------------------------------------------------------------

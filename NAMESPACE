@@ -5,6 +5,7 @@ useDynLib(PRECAST, .registration=TRUE)
 
 S3method(selectModel, PRECASTObj)
 S3method(selectModel, SeqK_PRECAST_Object)
+# S3method(print, PRECASTObj)
 
 
 
@@ -12,7 +13,7 @@ importFrom(Rcpp, evalCpp)
 
 #exportPattern("^[[:alpha:]]+")
 export(AddAdjList, AddParSetting, AddTSNE, AddUMAP, Add_embed, model_set)
-export(CreatePRECASTObject, gendata_seulist)
+export(CreatePRECASTObject) # gendata_seulist
 export(PRECAST, selectModel, selectModel.PRECASTObj,  IntegrateSpaData)
 
 export(ICM.EM,ICM.EM_structure, selectModel.SeqK_PRECAST_Object,
@@ -31,7 +32,8 @@ import(ggplot2)
 import(parallel)
 import(gtools)
 
-importFrom(cowplot, plot_grid, theme_cowplot)
+importFrom(patchwork, wrap_plots)
+importFrom(cowplot, theme_cowplot)
 importFrom(dplyr,sample_frac, "%>%")
 importFrom(ggthemes, tableau_color_pal)
 importFrom(patchwork, wrap_plots)
@@ -43,7 +45,7 @@ importFrom(Matrix, t, sparseMatrix)
 importFrom(mclust, Mclust, mclustBIC)
 #export(Mclust, mclustBIC)
 
-importFrom(Seurat, CreateDimReducObject, NormalizeData, CreateSeuratObject, 
+importFrom(Seurat, CreateDimReducObject, NormalizeData, CreateSeuratObject, FindVariableFeatures,  
            "Idents<-", Idents, DefaultAssay, "DefaultAssay<-", ScaleData)
 # export(ScaleData)
 

@@ -1,8 +1,8 @@
 Package: PRECAST
 Type: Package
 Title: Embedding and Clustering with Alignment for Spatial Datasets
-Version: 1.2
-Date: 2022-07-10
+Version: 1.3
+Date: 2022-10-18
 Authors@R: 
     c(person(given = "Wei",
              family = "Liu",
@@ -22,7 +22,7 @@ Description: An efficient data integration method is provided for multiple spati
 License: GPL-3
 Depends: parallel, gtools, R (>= 4.0.0)
 Imports: GiRaF, MASS, Matrix, mclust, methods, purrr, utils, Seurat,
-        cowplot, scater, pbapply, patchwork, ggthemes, dplyr, ggplot2,
+        cowplot, patchwork, scater, pbapply, ggthemes, dplyr, ggplot2,
         stats, DR.SC, scales, Rcpp (>= 1.0.5)
 LazyData: true
 URL: https://github.com/feiyoung/PRECAST
@@ -32,6 +32,6 @@ LinkingTo: Rcpp, RcppArmadillo
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2022-07-11 12:43:56 UTC; Liuxianju
+Packaged: 2022-10-18 12:52:47 UTC; Liuxianju
 Repository: CRAN
-Date/Publication: 2022-07-11 23:30:09 UTC
+Date/Publication: 2022-10-18 13:57:54 UTC

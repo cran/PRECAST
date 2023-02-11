@@ -1,9 +1,19 @@
 # PRECAST
+
+=========================================================================
+<!-- badges: start -->
+
+[![](https://www.r-pkg.org/badges/version-ago/PRECAST)](https://cran.r-project.org/package=PRECAST)
+[![](https://cranlogs.r-pkg.org/badges/PRECAST?color=orange)](https://cran.r-project.org/package=PRECAST)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/PRECAST?color=orange)](https://cran.r-project.org/package=PRECAST)
+[![DOI](https://zenodo.org/badge/500674213.svg)](https://zenodo.org/badge/latestdoi/500674213)
+<!-- badges: end -->
+
 PRECAST: a probabilistic embedding and clustering with alignment for spatial transcriptomics data integration.
 
 PRECAST  is a package for integrating and analyzing multiple spatially resolved transcriptomics (SRT) datasets, developed by the Jin Liu's lab. It unifies spatial factor analysis simultaneously with spatial clustering and embedding alignment, requiring only partially shared cell/domain clusters across datasets.
 
-Check out our [bioRxiv paper](https://doi.org/10.1101/2022.06.26.497672) and  our [Package Website](https://feiyoung.github.io/PRECAST/index.html) for a more complete description of the methods and analyses. 
+Check out our [Nature Communications paper](https://www.nature.com/articles/s41467-023-35947-w) and  our [Package Website](https://feiyoung.github.io/PRECAST/index.html) for a more complete description of the methods and analyses. 
 
 PRECAST can be used to compare and contrast experimental datasets in a variety of contexts, for instance:
 
@@ -57,11 +67,11 @@ For usage examples and guided walkthroughs, check the `vignettes` directory of t
 
 For the users that don't have set up system properly, the following setup on different systems can be referred.
 ## Setup on Windows system
-First, download [Rtools](https://cran.r-project.org/bin/windows/Rtools/); second, add the Rtools directory to the environment variable. Users can follow [here](https://helpdeskgeek.com/windows-10/add-windows-path-environment-variable/#:~:text=Go%20ahead%20and%20click%20on%20the%20Environment%20Variables,you%20have%20to%20decide%20which%20one%20to%20edit) to add Windows PATH Environment Variable.
+First, download [Rtools](https://cran.r-project.org/bin/windows/Rtools/); second, add the Rtools directory to the environment variable.
 
 
 ## Setup on MacOS system
-First, install Xcode. Installation about Xcode can be referred [here](https://stackoverflow.com/questions/8291146/xcode-installation-on-mac#:~:text=You%20get%20it%20from%20the%20Mac%20App%20Store.,find%20the%20app%2C%20and%20click%20the%20install%20button).
+First, install Xcode. Installation about Xcode can be referred [here](https://stackoverflow.com/questions/8291146/xcode-installation-on-mac).
 
 
 Second, install "gfortran" for compiling C++ and Fortran at [here](https://github.com/fxcoudert/gfortran-for-macOS).

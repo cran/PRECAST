@@ -400,7 +400,7 @@ void runICM_sp1(const arma::field<MATTYPE>& Xf, arma::field<MATTYPE>& Vf, arma::
     MATTYPE Uy1, U1;
     VECTYPE U1min;
     uvec y1_u;
-    ivec y = conv_to< ivec >::from(yf(r));
+    // ivec y = conv_to< ivec >::from(yf(r));
     n = Xf(r).n_rows; // tmp object
     
     // ivec y1;
@@ -416,12 +416,25 @@ void runICM_sp1(const arma::field<MATTYPE>& Xf, arma::field<MATTYPE>& Vf, arma::
       if(Sp2){
         Muv(r) = get_Vmean(Vf(r),  Adjf_car(r));
         // cout<<"iter="<< iter <<endl;
-        for(i=0; i<n; i++){  // O(nq^2*maxIter_ICM)
-          
-          Vf(r).row(i)= (XSW(r).slice(y(i)-1).row(i) - (Mu0.row(y(i)-1))* WtSW(r).slice(y(i)-1) +  Muv(r).row(i)* (Psi0.slice(r)).i())*
-            inv_sympd(WtSW(r).slice(y(i)-1) + (Psi0.slice(r)).i());
-          
+        // for(i=0; i<n; i++){  // O(nq^2*maxIter_ICM)
+        // 
+        //   Vf(r).row(i)= (XSW(r).slice(y1_u(i)).row(i) - (Mu0.row(y1_u(i)))* WtSW(r).slice(y1_u(i)) +  Muv(r).row(i)* (Psi0.slice(r)).i())*
+        //     inv_sympd(WtSW(r).slice(y1_u(i)) + (Psi0.slice(r)).i());
+        // 
+        // }
+        
+        for(k = 0; k<K; ++k){
+          uvec index_k = find(y1_u == k);
+          int nk = index_k.n_elem;
+          // Rprintf("k= %d,  nk = %d ! \n", k, nk);
+          if(nk > 0){// if the number of spots whose cluster is k is greater than 0
+            Vf(r).rows(index_k) = (XSW(r).slice(k).rows(index_k)- repmat(Mu0.row(k), nk,1) * WtSW(r).slice(k) + Muv(r).rows(index_k)*Psi0.slice(r).i()) *
+              inv_sympd(WtSW(r).slice(k) + Psi0.slice(r).i());
+          }
+
         }
+        
+        
         // Since energy_V is computationally high, we do not caculate it.
         // Energy(iter) = energy_V(X, V, W0, Lam_vec0, Muv, Mu0, Sigma0,Psi0,y, Cki) + sum(Umin); // 
         
@@ -785,45 +798,88 @@ Rcpp:: List idrsc2Cpp(const Rcpp::List& Xlist, const Rcpp::List& Adjlist, const 
     }
     
     
-    
-    //set parallel structure object
-    par_iDRSC2 parObj(Xf, Adjf, Adjf_car, yf,  Mu0, Sigma0, W_int,  Lam0, Psi0,
+    if(lengthK==1){
+      field<ivec> yf_int(r_max);
+      for (int r = 0; r < r_max; r++){
+        ivec tmp_yf = yf(r).col(0);
+        yf_int(r) = tmp_yf;
+      }
+      MATTYPE Mu_int = Mu0(0);
+      MATTYPE Lam_int = Lam0;
+      CUBETYPE Psi_int = Psi0;   
+      VECTYPE alpha_int = alpha0(0);
+      CUBETYPE Sigma_int = Sigma0(0);
+      Objidrsc2 output = idrsc2(Xf, Adjf, Adjf_car, yf_int,
+                         Mu_int, Sigma_int,  W_int,
+                         Lam_int, Psi_int,
+                         alpha_int,  beta0,  beta_grid,
+                         maxIter_ICM,  maxIter, epsLogLik, verbose,
+                         homo, homoClust, Sigma_diag, mix_prop_heter, Sp2); 
+      
+      List Objidrsc2Rcpp(lengthK);
+      
+        // output return value
+        Objidrsc2Rcpp[0] = List::create(
+          Rcpp::Named("cluster") = output.yf,
+          Rcpp::Named("hZ") = output.Ezz,
+          Rcpp::Named("hV") = output.Vf,
+          Rcpp::Named("Rf") = output.Rf,
+          Rcpp::Named("beta") = output.beta0,
+          Rcpp::Named("Mu") = output.Mu0,
+          Rcpp::Named("Sigma") = output.Sigma0,
+          Rcpp::Named("Psi") = output.Psi0,
+          Rcpp::Named("W") = output.W0,
+          Rcpp::Named("Lam") = output.Lam0,
+          Rcpp::Named("loglik") = output.loglik,
+          Rcpp::Named("loglik_seq") = output.loglik_seq);
+      
+      
+      return(Objidrsc2Rcpp);
+      
+      
+    }else{
+      //set parallel structure object
+      par_iDRSC2 parObj(Xf, Adjf, Adjf_car, yf,  Mu0, Sigma0, W_int,  Lam0, Psi0,
                         alpha0, beta0, beta_grid, maxIter_ICM, maxIter, epsLogLik, verbose,
                         homo, homoClust, Sigma_diag, mix_prop_heter, Sp2, maxK, minK);
-
-	const int n_thread = coreNum;
-	std::vector<std::thread> threads(n_thread);
-    
-	for (int i_thread = 0; i_thread < n_thread; i_thread++){
-		threads[i_thread] = std::thread(&par_iDRSC2::update_by_thread_idrsc2, &parObj, i_thread);
-	}
-	for (int i = 0; i < n_thread; i++){
-		threads[i].join();
-	}
-
-    
-    List Objidrsc2Rcpp(maxK-minK+1);
-    
-    
-    for (int k = 0; k < maxK - minK + 1; k++){
+      
+      const int n_thread = coreNum;
+      std::vector<std::thread> threads(n_thread);
+      
+      for (int i_thread = 0; i_thread < n_thread; i_thread++){
+        threads[i_thread] = std::thread(&par_iDRSC2::update_by_thread_idrsc2, &parObj, i_thread);
+      }
+      for (int i = 0; i < n_thread; i++){
+        threads[i].join();
+      }
+      
+      
+      List Objidrsc2Rcpp(maxK-minK+1);
+      
+      
+      for (int k = 0; k < maxK - minK + 1; k++){
         // output return value
         Objidrsc2Rcpp[k] = List::create(
-        Rcpp::Named("cluster") = parObj.output[k].yf,
-        Rcpp::Named("hZ") = parObj.output[k].Ezz,
-        Rcpp::Named("hV") = parObj.output[k].Vf,
-        Rcpp::Named("Rf") = parObj.output[k].Rf,
-        Rcpp::Named("beta") = parObj.output[k].beta0,
-        Rcpp::Named("Mu") = parObj.output[k].Mu0,
-        Rcpp::Named("Sigma") = parObj.output[k].Sigma0,
-        Rcpp::Named("Psi") = parObj.output[k].Psi0,
-        Rcpp::Named("W") = parObj.output[k].W0,
-        Rcpp::Named("Lam") = parObj.output[k].Lam0,
-        Rcpp::Named("loglik") = parObj.output[k].loglik,
-        Rcpp::Named("loglik_seq") = parObj.output[k].loglik_seq);
+          Rcpp::Named("cluster") = parObj.output[k].yf,
+          Rcpp::Named("hZ") = parObj.output[k].Ezz,
+          Rcpp::Named("hV") = parObj.output[k].Vf,
+          Rcpp::Named("Rf") = parObj.output[k].Rf,
+          Rcpp::Named("beta") = parObj.output[k].beta0,
+          Rcpp::Named("Mu") = parObj.output[k].Mu0,
+          Rcpp::Named("Sigma") = parObj.output[k].Sigma0,
+          Rcpp::Named("Psi") = parObj.output[k].Psi0,
+          Rcpp::Named("W") = parObj.output[k].W0,
+          Rcpp::Named("Lam") = parObj.output[k].Lam0,
+          Rcpp::Named("loglik") = parObj.output[k].loglik,
+          Rcpp::Named("loglik_seq") = parObj.output[k].loglik_seq);
+      }
+      
+      
+      return(Objidrsc2Rcpp);
     }
     
     
-  return(Objidrsc2Rcpp);
+    
 }
 
 

@@ -1,8 +1,10 @@
+# library(pkgdown)
 # pkgdown::build_site()
 # pkgdown::build_reference()
+# build_home()
 # build_article(name="PRECAST.DLPFC") # Solely compile one article for updating.
 # build_article(name="PRECAST.BreastCancer")
-# R CMD check --as-cran PRECAST_1.3.tar.gz
+# R CMD check --as-cran PRECAST_1.5.tar.gz
 # devtools::check_win_release()
 # iDR.SC <- function(...) UseMethod("iDR.SC")
 model_set <- function(Sigma_equal=FALSE, Sigma_diag=TRUE,mix_prop_heter=TRUE,
@@ -32,6 +34,10 @@ ICM.EM_structure  <- function(XList,  K, AdjList, q=15,parameterList=NULL){
   for(i in 1:n_par){
     assign(names(parameterList)[i], parameterList[[i]])
   }
+  
+  ## Centering
+  XList <- lapply(XList, scale, scale=FALSE)
+  
   resList <- ICM.EM(XList, q, K, AdjList=AdjList, 
               beta_grid=beta_grid,
               maxIter_ICM=maxIter_ICM,maxIter=maxIter, epsLogLik=epsLogLik, verbose=verbose,
@@ -69,6 +75,10 @@ ICM.EM <- function(XList, q, K, AdjList=NULL,  Adjlist_car=NULL, posList = NULL,
     stop('The dimension of Adj matrix does not match that of X!\n')
   
   if(is.null(Adjlist_car)) Adjlist_car <- AdjList
+  
+  ## Centering
+  XList <- lapply(XList, scale, scale=FALSE)
+  
   
   Xmat <- NULL
   for(r in 1:r_max){

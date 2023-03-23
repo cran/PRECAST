@@ -17,23 +17,52 @@ knitr::opts_chunk$set(
 #  library(Seurat)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  
 #  data_simu ## a list including three Seurat object with default assay: RNA
 
 ## ----eval= FALSE--------------------------------------------------------------
 #  head(data_simu[[1]])
 
+## ----eval= FALSE--------------------------------------------------------------
+#  row.names(data_simu[[1]])[1:10]
+
+## ----eval = FALSE-------------------------------------------------------------
+#  ## Get the gene-by-spot read count matrices
+#  countList <- lapply(data_simu, function(x) x[["RNA"]]@counts)
+#  
+#  ## Get the meta data of each spot for each data batch
+#  metadataList <- lapply(data_simu, function(x) x@meta.data)
+#  
+#  ## ensure the row.names of metadata in metaList are the same as that of colnames count matrix in countList
+#  M <- length(countList)
+#  for(r in 1:M){
+#    row.names(metadataList[[r]]) <- colnames(countList[[r]])
+#  }
+#  
+#  
+#  ## Create the Seurat list  object
+#  
+#  seuList <- list()
+#  for(r in 1:M){
+#    seuList[[r]] <- CreateSeuratObject(counts = countList[[r]], meta.data=metadataList[[r]], project = "PRECASTsimu")
+#  }
+#  
+
 ## ----eval = FALSE-------------------------------------------------------------
 #  
-#  ## Create
+#  ## Create PRECASTObject
 #  set.seed(2022)
-#  PRECASTObj <-  CreatePRECASTObject(data_simu, customGenelist=row.names(data_simu[[1]]))
+#  PRECASTObj <-  CreatePRECASTObject(seuList, customGenelist=row.names(seuList[[1]]))
 #  
+#  ## User can retain the raw seuList by the following commond.
+#  ##  PRECASTObj <-  CreatePRECASTObject(seuList, customGenelist=row.names(seuList[[1]]), rawData.preserve = TRUE)
 #  
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  ## check the number of genes/features after filtering step
 #  PRECASTObj@seulist
+#  
+#  ## seuList is null since the default value `rawData.preserve` is FALSE.
+#  PRECASTObj@seuList
 #  
 #  ## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.
 #  PRECASTObj <-  AddAdjList(PRECASTObj, platform = "Visium")
@@ -63,32 +92,42 @@ knitr::opts_chunk$set(
 #  ## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  p12 <- SpaPlot(seuInt, batch=NULL,point_size=2, combine=TRUE)
+#  cols_cluster <- chooseColors(palettes_name = 'Nature 10', n_colors = 7, plot_colors = TRUE)
+
+## ----eval = FALSE, fig.height=5, fig.width=7----------------------------------
+#  p12 <- SpaPlot(seuInt, batch=NULL, cols=cols_cluster, point_size=2, combine=TRUE)
 #  p12
 #  # users can plot each sample by setting combine=FALSE
 
-## ----eval = FALSE-------------------------------------------------------------
-#  seuInt <- AddUMAP(seuInt)
-#  SpaPlot(seuInt, batch=NULL,item='RGB_UMAP',point_size=2, combine=TRUE, text_size=15)
+## ----eval = FALSE, fig.height=2.6, fig.width=7--------------------------------
+#  pList <- SpaPlot(seuInt, batch=NULL, cols=cols_cluster, point_size=2, combine=FALSE, title_name=NULL)
+#  drawFigs(pList[1:2], layout.dim = c(1,2), common.legend = TRUE, legend.position = 'right', align='hv')
 #  
+
+## ----eval = FALSE, fig.height=5, fig.width=6----------------------------------
+#  seuInt <- AddUMAP(seuInt)
+#  SpaPlot(seuInt, batch=NULL,item='RGB_UMAP',point_size=1, combine=TRUE, text_size=15)
+#  
+#  ## Plot tSNE RGB plot
 #  #seuInt <- AddTSNE(seuInt)
 #  #SpaPlot(seuInt, batch=NULL,item='RGB_TSNE',point_size=2, combine=T, text_size=15)
 
-## ----eval = FALSE-------------------------------------------------------------
+## ----eval = FALSE, fig.height=8, fig.width=6----------------------------------
 #  seuInt <- AddTSNE(seuInt, n_comp = 2)
-#  library(patchwork)
-#  cols_cluster <- c("#E04D50", "#4374A5", "#F08A21","#2AB673", "#FCDDDE",  "#70B5B0", "#DFE0EE" ,"#D0B14C")
-#  p1 <- dimPlot(seuInt,  font_family='serif', cols=cols_cluster) # Times New Roman
+#  
+#  p1 <- dimPlot(seuInt, item='cluster', font_family='serif', cols=cols_cluster) # Times New Roman
 #  p2 <- dimPlot(seuInt, item='batch', point_size = 1,  font_family='serif')
-#  p1 + p2
+#  drawFigs(list(p1, p2), common.legend=FALSE, align='hv')
 #  # It is noted that only sample batch 1 has cluster 4, and only sample batch 2 has cluster 7.
 
-## ----eval = FALSE-------------------------------------------------------------
+## ----eval = FALSE, fig.height=4, fig.width=6----------------------------------
 #  dimPlot(seuInt, reduction = 'UMAP3', item='cluster', cols=cols_cluster, font_family='serif')
 
-## ----eval = FALSE-------------------------------------------------------------
-#  DimPlot(seuInt, reduction = 'position')
-#  DimPlot(seuInt, reduction = 'tSNE')
+## ----eval = FALSE, fig.height=3, fig.width=8----------------------------------
+#  library(Seurat)
+#  p1 <- DimPlot(seuInt[,1: 4226], reduction = 'position', cols=cols_cluster, pt.size =1) # plot the first data batch: first 4226 spots.
+#  p2 <- DimPlot(seuInt, reduction = 'tSNE',cols=cols_cluster, pt.size=1)
+#  drawFigs(list(p1, p2), layout.dim = c(1,2), common.legend = TRUE)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  dat_deg <- FindAllMarkers(seuInt)

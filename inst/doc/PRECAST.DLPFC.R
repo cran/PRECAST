@@ -63,7 +63,14 @@ knitr::knit_hooks$set(time_it = local({
 #  ari_precast <- mclust::adjustedRandIndex(PRECASTObj@resList$cluster[[1]], PRECASTObj@seulist[[1]]$layer_guess_reordered)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  seuInt <- IntegrateSpaData(PRECASTObj, species='Human')
+#  seuInt <- PRECASTObj@seulist[[1]]
+#  seuInt@meta.data$cluster <- factor(unlist(PRECASTObj@resList$cluster))
+#  seuInt@meta.data$batch <- 1
+#  seuInt <- Add_embed(PRECASTObj@resList$hZ[[1]], seuInt, embed_name = 'PRECAST')
+#  posList <- lapply(PRECASTObj@seulist, function(x) cbind(x$row, x$col))
+#  seuInt <- Add_embed(posList[[1]], seuInt, embed_name = 'position')
+#  Idents(seuInt) <- factor(seuInt@meta.data$cluster)
+#  
 #  seuInt
 #  ## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.
 
@@ -83,13 +90,12 @@ knitr::knit_hooks$set(time_it = local({
 #  p_sp2 <- DR.SC::spatialPlotClusters(seu_drsc)+ cowplot::theme_cowplot()  +
 #    ggplot2::ggtitle(paste0("DR-SC ARI=", round(ari_drsc, 2)) )
 
-## ----eval = FALSE-------------------------------------------------------------
-#  library(patchwork)
-#  p_sp1 + p_sp2
+## ----eval = FALSE, fig.width=10, fig.height=4---------------------------------
+#  drawFigs(list(p_sp1, p_sp2), layout.dim = c(1,2))
 #  
 
-## ----eval = FALSE-------------------------------------------------------------
-#  p_tsne + p_tsne_drsc
+## ----eval = FALSE, fig.width=10, fig.height=4---------------------------------
+#  drawFigs(list(p_tsne, p_tsne_drsc), layout.dim = c(1,2))
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  sessionInfo()

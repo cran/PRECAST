@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wei Liu" />
 
-<meta name="date" content="2023-02-11" />
+<meta name="date" content="2023-03-23" />
 
 <title>PRECAST: DLPFC Single Sample Analysis</title>
 
@@ -318,7 +318,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">PRECAST: DLPFC Single Sample Analysis</h1>
 <h4 class="author">Wei Liu</h4>
-<h4 class="date">2023-02-11</h4>
+<h4 class="date">2023-03-23</h4>
 
 
 
@@ -366,10 +366,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb8-2" title="2">resList &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>resList</a>
 <a class="sourceLine" id="cb8-3" title="3">PRECASTObj &lt;-<span class="st"> </span><span class="kw">selectModel</span>(PRECASTObj)</a>
 <a class="sourceLine" id="cb8-4" title="4">ari_precast &lt;-<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster[[<span class="dv">1</span>]], PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]<span class="op">$</span>layer_guess_reordered)</a></code></pre></div>
-<p>Integrate the reults into a Seurat object seuInt by the function <code>IntegrateSpaData</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">IntegrateSpaData</span>(PRECASTObj, <span class="dt">species =</span> <span class="st">&quot;Human&quot;</span>)</a>
-<a class="sourceLine" id="cb9-2" title="2">seuInt</a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="co">## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.</span></a></code></pre></div>
+<p>Put the reults into a Seurat object seuInt.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">seuInt &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]</a>
+<a class="sourceLine" id="cb9-2" title="2">seuInt<span class="op">@</span>meta.data<span class="op">$</span>cluster &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">unlist</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster))</a>
+<a class="sourceLine" id="cb9-3" title="3">seuInt<span class="op">@</span>meta.data<span class="op">$</span>batch &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb9-4" title="4">seuInt &lt;-<span class="st"> </span><span class="kw">Add_embed</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>hZ[[<span class="dv">1</span>]], seuInt, <span class="dt">embed_name =</span> <span class="st">&quot;PRECAST&quot;</span>)</a>
+<a class="sourceLine" id="cb9-5" title="5">posList &lt;-<span class="st"> </span><span class="kw">lapply</span>(PRECASTObj<span class="op">@</span>seulist, <span class="cf">function</span>(x) <span class="kw">cbind</span>(x<span class="op">$</span>row, x<span class="op">$</span>col))</a>
+<a class="sourceLine" id="cb9-6" title="6">seuInt &lt;-<span class="st"> </span><span class="kw">Add_embed</span>(posList[[<span class="dv">1</span>]], seuInt, <span class="dt">embed_name =</span> <span class="st">&quot;position&quot;</span>)</a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="kw">Idents</span>(seuInt) &lt;-<span class="st"> </span><span class="kw">factor</span>(seuInt<span class="op">@</span>meta.data<span class="op">$</span>cluster)</a>
+<a class="sourceLine" id="cb9-8" title="8"></a>
+<a class="sourceLine" id="cb9-9" title="9">seuInt</a>
+<a class="sourceLine" id="cb9-10" title="10"><span class="co">## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.</span></a></code></pre></div>
 <p>Save the spatial and tSNE scatter plots for clusters from PRECAST</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">p_sp1 &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>, <span class="dt">point_size =</span> <span class="dv">3</span>, <span class="dt">combine =</span> F)[[<span class="dv">1</span>]] <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb10-2" title="2"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;PRECAST: ARI=&quot;</span>, <span class="kw">round</span>(ari_precast, <span class="dv">2</span>))) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">xlab</span>(<span class="st">&quot;row&quot;</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ylab</span>(<span class="st">&quot;col&quot;</span>)</a>
@@ -384,10 +391,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb11-5" title="5">p_sp2 &lt;-<span class="st"> </span>DR.SC<span class="op">::</span><span class="kw">spatialPlotClusters</span>(seu_drsc) <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;DR-SC ARI=&quot;</span>,</a>
 <a class="sourceLine" id="cb11-6" title="6">    <span class="kw">round</span>(ari_drsc, <span class="dv">2</span>)))</a></code></pre></div>
 <p>Compare the clustering performance of PRECAST and DR-SC.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">library</span>(patchwork)</a>
-<a class="sourceLine" id="cb12-2" title="2">p_sp1 <span class="op">+</span><span class="st"> </span>p_sp2</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">drawFigs</span>(<span class="kw">list</span>(p_sp1, p_sp2), <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</a></code></pre></div>
 <p>Compare the tSNE visualiztion performance of PRECAST and DR-SC.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">p_tsne <span class="op">+</span><span class="st"> </span>p_tsne_drsc</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">drawFigs</span>(<span class="kw">list</span>(p_tsne, p_tsne_drsc), <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</a></code></pre></div>
 </div>
 </div>
 <div id="session-information" class="section level2">

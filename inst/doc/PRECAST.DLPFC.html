@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wei Liu" />
 
-<meta name="date" content="2023-03-23" />
+<meta name="date" content="2023-04-18" />
 
 <title>PRECAST: DLPFC Single Sample Analysis</title>
 
@@ -318,7 +318,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">PRECAST: DLPFC Single Sample Analysis</h1>
 <h4 class="author">Wei Liu</h4>
-<h4 class="date">2023-03-23</h4>
+<h4 class="date">2023-04-18</h4>
 
 
 
@@ -340,65 +340,104 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Compare PRECAST with DR-SC in analyzing one sample</h2>
 <p>First, we view the the spatial transcriptomics data with Visium platform.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">dlpfc_<span class="dv">151672</span>  <span class="co">## a list including two Seurat object</span></a></code></pre></div>
+<p>check the meta data that must include the spatial coordinates named “row” and “col”, respectively. If the names are not, they are required to rename them.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">meta_data &lt;-<span class="st"> </span>dlpfc_<span class="dv">151672</span><span class="op">@</span>meta.data</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">all</span>(<span class="kw">c</span>(<span class="st">&quot;row&quot;</span>, <span class="st">&quot;col&quot;</span>) <span class="op">%in%</span><span class="st"> </span><span class="kw">colnames</span>(meta_data))  <span class="co">## the names are correct!</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">head</span>(meta_data[, <span class="kw">c</span>(<span class="st">&quot;row&quot;</span>, <span class="st">&quot;col&quot;</span>)])</a></code></pre></div>
 <div id="prepare-the-precastobject." class="section level3">
 <h3>Prepare the PRECASTObject.</h3>
-<p>Create a PRECASTObj object to prepare for PRECAST models.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">library</span>(PRECAST)</a>
-<a class="sourceLine" id="cb5-2" title="2">preobj &lt;-<span class="st"> </span><span class="kw">CreatePRECASTObject</span>(<span class="dt">seuList =</span> <span class="kw">list</span>(dlpfc_<span class="dv">151672</span>))</a></code></pre></div>
+<p>Create a PRECASTObj object to prepare for PRECAST models. Here, we only show the <code>HVGs</code> method to select the 2000 highly variable genes, but users are able to choose more genes or also use the <code>SPARK-X</code> to choose the spatially variable genes.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">set.seed</span>(<span class="dv">2023</span>)</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="kw">library</span>(PRECAST)</a>
+<a class="sourceLine" id="cb6-3" title="3">preobj &lt;-<span class="st"> </span><span class="kw">CreatePRECASTObject</span>(<span class="dt">seuList =</span> <span class="kw">list</span>(dlpfc_<span class="dv">151672</span>), <span class="dt">selectGenesMethod =</span> <span class="st">&quot;HVGs&quot;</span>, <span class="dt">gene.number =</span> <span class="dv">2000</span>)  <span class="co"># </span></a></code></pre></div>
 </div>
 <div id="add-the-model-setting" class="section level3">
 <h3>Add the model setting</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">## check the number of genes/features after filtering step</span></a>
-<a class="sourceLine" id="cb6-2" title="2">preobj<span class="op">@</span>seulist</a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="co">## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.</span></a>
-<a class="sourceLine" id="cb6-4" title="4">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddAdjList</span>(preobj, <span class="dt">platform =</span> <span class="st">&quot;Visium&quot;</span>)</a>
-<a class="sourceLine" id="cb6-5" title="5"><span class="co">## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the</span></a>
-<a class="sourceLine" id="cb6-6" title="6"><span class="co">## information in the algorithm.</span></a>
-<a class="sourceLine" id="cb6-7" title="7">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddParSetting</span>(PRECASTObj, <span class="dt">Sigma_equal =</span> <span class="ot">FALSE</span>, <span class="dt">coreNum =</span> <span class="dv">1</span>, <span class="dt">maxIter =</span> <span class="dv">30</span>, <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">## check the number of genes/features after filtering step</span></a>
+<a class="sourceLine" id="cb7-2" title="2">preobj<span class="op">@</span>seulist</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co">## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.</span></a>
+<a class="sourceLine" id="cb7-4" title="4">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddAdjList</span>(preobj, <span class="dt">platform =</span> <span class="st">&quot;Visium&quot;</span>)</a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">## information in the algorithm.</span></a>
+<a class="sourceLine" id="cb7-7" title="7">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddParSetting</span>(PRECASTObj, <span class="dt">Sigma_equal =</span> <span class="ot">FALSE</span>, <span class="dt">coreNum =</span> <span class="dv">1</span>, <span class="dt">maxIter =</span> <span class="dv">30</span>, <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 </div>
 <div id="fit-precast" class="section level3">
 <h3>Fit PRECAST</h3>
 <p>For function <code>PRECAST</code>, users can specify the number of clusters <span class="math inline">\(K\)</span> or set <code>K</code> to be an integer vector by using modified BIC(MBIC) to determine <span class="math inline">\(K\)</span>. Here, we use user-specified number of clusters.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">### Given K</span></a>
-<a class="sourceLine" id="cb7-2" title="2">PRECASTObj &lt;-<span class="st"> </span><span class="kw">PRECAST</span>(PRECASTObj, <span class="dt">K =</span> <span class="dv">7</span>)</a></code></pre></div>
-<p>Select a best model</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">## backup the fitting results in resList</span></a>
-<a class="sourceLine" id="cb8-2" title="2">resList &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>resList</a>
-<a class="sourceLine" id="cb8-3" title="3">PRECASTObj &lt;-<span class="st"> </span><span class="kw">selectModel</span>(PRECASTObj)</a>
-<a class="sourceLine" id="cb8-4" title="4">ari_precast &lt;-<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster[[<span class="dv">1</span>]], PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]<span class="op">$</span>layer_guess_reordered)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">### Given K</span></a>
+<a class="sourceLine" id="cb8-2" title="2">PRECASTObj &lt;-<span class="st"> </span><span class="kw">PRECAST</span>(PRECASTObj, <span class="dt">K =</span> <span class="dv">7</span>)</a></code></pre></div>
+<p>Use the function <code>SelectModel()</code> to re-organize the fitted results in PRECASTObj.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co">## backup the fitting results in resList</span></a>
+<a class="sourceLine" id="cb9-2" title="2">resList &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>resList</a>
+<a class="sourceLine" id="cb9-3" title="3">PRECASTObj &lt;-<span class="st"> </span><span class="kw">SelectModel</span>(PRECASTObj)</a>
+<a class="sourceLine" id="cb9-4" title="4">ari_precast &lt;-<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster[[<span class="dv">1</span>]], PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]<span class="op">$</span>layer_guess_reordered)</a></code></pre></div>
+<details>
+<p><summary><strong>Other options</strong></summary> Users are also able to set multiple K, then choose the best one</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">PRECASTObj2 &lt;-<span class="st"> </span><span class="kw">AddParSetting</span>(PRECASTObj, <span class="dt">Sigma_equal =</span> <span class="ot">FALSE</span>, <span class="dt">coreNum =</span> <span class="dv">4</span>, <span class="dt">maxIter =</span> <span class="dv">30</span>, <span class="dt">verbose =</span> <span class="ot">TRUE</span>)  <span class="co"># set 4 cores to run in parallel.</span></a>
+<a class="sourceLine" id="cb10-2" title="2">PRECASTObj2 &lt;-<span class="st"> </span><span class="kw">PRECAST</span>(PRECASTObj2, <span class="dt">K =</span> <span class="dv">5</span><span class="op">:</span><span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="co">## backup the fitting results in resList</span></a>
+<a class="sourceLine" id="cb10-4" title="4">resList2 &lt;-<span class="st"> </span>PRECASTObj2<span class="op">@</span>resList</a>
+<a class="sourceLine" id="cb10-5" title="5">PRECASTObj2 &lt;-<span class="st"> </span><span class="kw">SelectModel</span>(PRECASTObj2)</a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="kw">str</span>(PRECASTObj2<span class="op">@</span>resList)</a>
+<a class="sourceLine" id="cb10-7" title="7">mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(PRECASTObj2<span class="op">@</span>resList<span class="op">$</span>cluster[[<span class="dv">1</span>]], PRECASTObj2<span class="op">@</span>seulist[[<span class="dv">1</span>]]<span class="op">$</span>layer_guess_reordered)</a></code></pre></div>
+<p>Besides, user can also use different initialization method by setting <code>int.model</code>, for example, set <code>int.model=NULL</code>; see the functions <code>AddParSetting()</code> and <code>model_set()</code> for more details.</p>
+</details>
 <p>Put the reults into a Seurat object seuInt.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">seuInt &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]</a>
-<a class="sourceLine" id="cb9-2" title="2">seuInt<span class="op">@</span>meta.data<span class="op">$</span>cluster &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">unlist</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster))</a>
-<a class="sourceLine" id="cb9-3" title="3">seuInt<span class="op">@</span>meta.data<span class="op">$</span>batch &lt;-<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb9-4" title="4">seuInt &lt;-<span class="st"> </span><span class="kw">Add_embed</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>hZ[[<span class="dv">1</span>]], seuInt, <span class="dt">embed_name =</span> <span class="st">&quot;PRECAST&quot;</span>)</a>
-<a class="sourceLine" id="cb9-5" title="5">posList &lt;-<span class="st"> </span><span class="kw">lapply</span>(PRECASTObj<span class="op">@</span>seulist, <span class="cf">function</span>(x) <span class="kw">cbind</span>(x<span class="op">$</span>row, x<span class="op">$</span>col))</a>
-<a class="sourceLine" id="cb9-6" title="6">seuInt &lt;-<span class="st"> </span><span class="kw">Add_embed</span>(posList[[<span class="dv">1</span>]], seuInt, <span class="dt">embed_name =</span> <span class="st">&quot;position&quot;</span>)</a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="kw">Idents</span>(seuInt) &lt;-<span class="st"> </span><span class="kw">factor</span>(seuInt<span class="op">@</span>meta.data<span class="op">$</span>cluster)</a>
-<a class="sourceLine" id="cb9-8" title="8"></a>
-<a class="sourceLine" id="cb9-9" title="9">seuInt</a>
-<a class="sourceLine" id="cb9-10" title="10"><span class="co">## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">seuInt &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]</a>
+<a class="sourceLine" id="cb11-2" title="2">seuInt<span class="op">@</span>meta.data<span class="op">$</span>cluster &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">unlist</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster))</a>
+<a class="sourceLine" id="cb11-3" title="3">seuInt<span class="op">@</span>meta.data<span class="op">$</span>batch &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb11-4" title="4">seuInt &lt;-<span class="st"> </span><span class="kw">Add_embed</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>hZ[[<span class="dv">1</span>]], seuInt, <span class="dt">embed_name =</span> <span class="st">&quot;PRECAST&quot;</span>)</a>
+<a class="sourceLine" id="cb11-5" title="5">posList &lt;-<span class="st"> </span><span class="kw">lapply</span>(PRECASTObj<span class="op">@</span>seulist, <span class="cf">function</span>(x) <span class="kw">cbind</span>(x<span class="op">$</span>row, x<span class="op">$</span>col))</a>
+<a class="sourceLine" id="cb11-6" title="6">seuInt &lt;-<span class="st"> </span><span class="kw">Add_embed</span>(posList[[<span class="dv">1</span>]], seuInt, <span class="dt">embed_name =</span> <span class="st">&quot;position&quot;</span>)</a>
+<a class="sourceLine" id="cb11-7" title="7"><span class="kw">Idents</span>(seuInt) &lt;-<span class="st"> </span><span class="kw">factor</span>(seuInt<span class="op">@</span>meta.data<span class="op">$</span>cluster)</a>
+<a class="sourceLine" id="cb11-8" title="8"></a>
+<a class="sourceLine" id="cb11-9" title="9">seuInt</a>
+<a class="sourceLine" id="cb11-10" title="10"><span class="co">## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.</span></a></code></pre></div>
 <p>Save the spatial and tSNE scatter plots for clusters from PRECAST</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">p_sp1 &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>, <span class="dt">point_size =</span> <span class="dv">3</span>, <span class="dt">combine =</span> F)[[<span class="dv">1</span>]] <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;PRECAST: ARI=&quot;</span>, <span class="kw">round</span>(ari_precast, <span class="dv">2</span>))) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">xlab</span>(<span class="st">&quot;row&quot;</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ylab</span>(<span class="st">&quot;col&quot;</span>)</a>
-<a class="sourceLine" id="cb10-3" title="3">seuInt &lt;-<span class="st"> </span><span class="kw">AddTSNE</span>(seuInt, <span class="dt">n_comp =</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb10-4" title="4">p_tsne &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>)</a>
-<a class="sourceLine" id="cb10-5" title="5">p_tsne &lt;-<span class="st"> </span>p_tsne <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;PRECAST&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">p_sp1 &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>, <span class="dt">point_size =</span> <span class="dv">3</span>, <span class="dt">combine =</span> F)[[<span class="dv">1</span>]] <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;PRECAST: ARI=&quot;</span>, <span class="kw">round</span>(ari_precast, <span class="dv">2</span>))) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">xlab</span>(<span class="st">&quot;row&quot;</span>) <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ylab</span>(<span class="st">&quot;col&quot;</span>)</a>
+<a class="sourceLine" id="cb12-3" title="3">seuInt &lt;-<span class="st"> </span><span class="kw">AddTSNE</span>(seuInt, <span class="dt">n_comp =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb12-4" title="4">p_tsne &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>)</a>
+<a class="sourceLine" id="cb12-5" title="5">p_tsne &lt;-<span class="st"> </span>p_tsne <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;PRECAST&quot;</span>)</a></code></pre></div>
 <p>Fit DR-SC and Plot the spatial and tSNE scatter plots for clusters</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">seu_drsc &lt;-<span class="st"> </span>DR.SC<span class="op">::</span><span class="kw">DR.SC</span>(PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]], <span class="dt">K =</span> <span class="dv">7</span>, <span class="dt">verbose =</span> T)</a>
-<a class="sourceLine" id="cb11-2" title="2">ari_drsc &lt;-<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(seu_drsc<span class="op">$</span>spatial.drsc.cluster, PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]<span class="op">$</span>layer_guess_reordered)</a>
-<a class="sourceLine" id="cb11-3" title="3">p_tsne_drsc &lt;-<span class="st"> </span>DR.SC<span class="op">::</span><span class="kw">drscPlot</span>(seu_drsc)</a>
-<a class="sourceLine" id="cb11-4" title="4">p_tsne_drsc &lt;-<span class="st"> </span>p_tsne_drsc <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;DR-SC&quot;</span>)</a>
-<a class="sourceLine" id="cb11-5" title="5">p_sp2 &lt;-<span class="st"> </span>DR.SC<span class="op">::</span><span class="kw">spatialPlotClusters</span>(seu_drsc) <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;DR-SC ARI=&quot;</span>,</a>
-<a class="sourceLine" id="cb11-6" title="6">    <span class="kw">round</span>(ari_drsc, <span class="dv">2</span>)))</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">seu_drsc &lt;-<span class="st"> </span>DR.SC<span class="op">::</span><span class="kw">DR.SC</span>(PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]], <span class="dt">K =</span> <span class="dv">7</span>, <span class="dt">verbose =</span> T)</a>
+<a class="sourceLine" id="cb13-2" title="2">ari_drsc &lt;-<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(seu_drsc<span class="op">$</span>spatial.drsc.cluster, PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]<span class="op">$</span>layer_guess_reordered)</a>
+<a class="sourceLine" id="cb13-3" title="3">p_tsne_drsc &lt;-<span class="st"> </span>DR.SC<span class="op">::</span><span class="kw">drscPlot</span>(seu_drsc)</a>
+<a class="sourceLine" id="cb13-4" title="4">p_tsne_drsc &lt;-<span class="st"> </span>p_tsne_drsc <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="st">&quot;DR-SC&quot;</span>)</a>
+<a class="sourceLine" id="cb13-5" title="5">p_sp2 &lt;-<span class="st"> </span>DR.SC<span class="op">::</span><span class="kw">spatialPlotClusters</span>(seu_drsc) <span class="op">+</span><span class="st"> </span>cowplot<span class="op">::</span><span class="kw">theme_cowplot</span>() <span class="op">+</span><span class="st"> </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(<span class="st">&quot;DR-SC ARI=&quot;</span>,</a>
+<a class="sourceLine" id="cb13-6" title="6">    <span class="kw">round</span>(ari_drsc, <span class="dv">2</span>)))</a></code></pre></div>
 <p>Compare the clustering performance of PRECAST and DR-SC.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">drawFigs</span>(<span class="kw">list</span>(p_sp1, p_sp2), <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">drawFigs</span>(<span class="kw">list</span>(p_sp1, p_sp2), <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</a></code></pre></div>
 <p>Compare the tSNE visualiztion performance of PRECAST and DR-SC.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">drawFigs</span>(<span class="kw">list</span>(p_tsne, p_tsne_drsc), <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">drawFigs</span>(<span class="kw">list</span>(p_tsne, p_tsne_drsc), <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</a></code></pre></div>
+<details>
+<p><summary><strong>Session Info</strong></summary></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">sessionInfo</span>()</a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="co">#&gt; R version 4.1.2 (2021-11-01)</span></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span></a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="co">#&gt; Running under: Windows 10 x64 (build 22621)</span></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="co">#&gt; Matrix products: default</span></a>
+<a class="sourceLine" id="cb16-7" title="7"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb16-8" title="8"><span class="co">#&gt; locale:</span></a>
+<a class="sourceLine" id="cb16-9" title="9"><span class="co">#&gt; [1] LC_COLLATE=C                              </span></a>
+<a class="sourceLine" id="cb16-10" title="10"><span class="co">#&gt; [2] LC_CTYPE=Chinese (Simplified)_China.936   </span></a>
+<a class="sourceLine" id="cb16-11" title="11"><span class="co">#&gt; [3] LC_MONETARY=Chinese (Simplified)_China.936</span></a>
+<a class="sourceLine" id="cb16-12" title="12"><span class="co">#&gt; [4] LC_NUMERIC=C                              </span></a>
+<a class="sourceLine" id="cb16-13" title="13"><span class="co">#&gt; [5] LC_TIME=Chinese (Simplified)_China.936    </span></a>
+<a class="sourceLine" id="cb16-14" title="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb16-15" title="15"><span class="co">#&gt; attached base packages:</span></a>
+<a class="sourceLine" id="cb16-16" title="16"><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></a>
+<a class="sourceLine" id="cb16-17" title="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb16-18" title="18"><span class="co">#&gt; loaded via a namespace (and not attached):</span></a>
+<a class="sourceLine" id="cb16-19" title="19"><span class="co">#&gt;  [1] digest_0.6.29   R6_2.5.1        jsonlite_1.8.0  formatR_1.11   </span></a>
+<a class="sourceLine" id="cb16-20" title="20"><span class="co">#&gt;  [5] magrittr_2.0.3  evaluate_0.15   stringi_1.7.6   rlang_1.1.0    </span></a>
+<a class="sourceLine" id="cb16-21" title="21"><span class="co">#&gt;  [9] cli_3.2.0       rstudioapi_0.13 jquerylib_0.1.4 bslib_0.3.1    </span></a>
+<a class="sourceLine" id="cb16-22" title="22"><span class="co">#&gt; [13] rmarkdown_2.11  tools_4.1.2     stringr_1.4.0   xfun_0.29      </span></a>
+<a class="sourceLine" id="cb16-23" title="23"><span class="co">#&gt; [17] yaml_2.3.6      fastmap_1.1.0   compiler_4.1.2  htmltools_0.5.2</span></a>
+<a class="sourceLine" id="cb16-24" title="24"><span class="co">#&gt; [21] knitr_1.37      sass_0.4.1</span></a></code></pre></div>
+</details>
 </div>
-</div>
-<div id="session-information" class="section level2">
-<h2>Session information</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
 </div>
 
 

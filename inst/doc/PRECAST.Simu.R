@@ -29,8 +29,12 @@ knitr::opts_chunk$set(
 #  ## Get the gene-by-spot read count matrices
 #  countList <- lapply(data_simu, function(x) x[["RNA"]]@counts)
 #  
+#  ## Check the spatial coordinates: Yes, they are named as "row" and "col"!
+#  head(data_simu[[1]]@meta.data)
+#  
 #  ## Get the meta data of each spot for each data batch
 #  metadataList <- lapply(data_simu, function(x) x@meta.data)
+#  
 #  
 #  ## ensure the row.names of metadata in metaList are the same as that of colnames count matrix in countList
 #  M <- length(countList)
@@ -67,21 +71,38 @@ knitr::opts_chunk$set(
 #  ## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.
 #  PRECASTObj <-  AddAdjList(PRECASTObj, platform = "Visium")
 #  
-#  ## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the information in the algorithm.
-#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, maxIter=30, verbose=TRUE)
+#  ## Add a model setting in advance for a PRECASTObj object: verbose =TRUE helps outputing the information in the algorithm; coreNum set the how many cores are used in PRECAST. If you run PRECAST for multiple number of clusters, you can set multiple cores; otherwise, set it to 1.
+#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, maxIter=30, verbose=TRUE,
+#                               coreNum =1)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  ### Given K
 #  set.seed(2022)
 #  PRECASTObj <- PRECAST(PRECASTObj, K=7)
+
+## ----eval =FALSE--------------------------------------------------------------
+#  ## Reset  parameters by increasing cores.
+#  PRECASTObj2 <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, maxIter=30, verbose=TRUE,
+#                               coreNum =2)
+#  set.seed(2023)
+#  PRECASTObj2 <- PRECAST(PRECASTObj2, K=6:7)
+#  
+#  resList2 <- PRECASTObj2@resList
+#  PRECASTObj2 <- SelectModel(PRECASTObj2)
 #  
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  ## backup the fitting results in resList
+#  ## check the fitted results: there are four list for the fitted results of each K (6:9).
+#  str(PRECASTObj@resList)
+#  ## backup the fitted results in resList
 #  resList <- PRECASTObj@resList
 #  # PRECASTObj@resList <- resList
-#  PRECASTObj <- selectModel(PRECASTObj)
-#  true_cluster <- lapply(data_simu, function(x) x$true_cluster)
+#  PRECASTObj <- SelectModel(PRECASTObj)
+#  ## check the best and re-organized results
+#  str(PRECASTObj@resList) ## The selected best K is 7
+
+## ----eval = FALSE-------------------------------------------------------------
+#  true_cluster <- lapply(PRECASTObj@seulist, function(x) x$true_cluster)
 #  str(true_cluster)
 #  mclust::adjustedRandIndex(unlist(PRECASTObj@resList$cluster), unlist(true_cluster))
 
@@ -140,6 +161,6 @@ knitr::opts_chunk$set(
 #  head(top10)
 #  
 
-## ----eval = FALSE-------------------------------------------------------------
-#  sessionInfo()
+## -----------------------------------------------------------------------------
+sessionInfo()
 

@@ -30,12 +30,11 @@ knitr::knit_hooks$set(time_it = local({
 #  load("bc2.rda")
 
 ## ----eval=  FALSE-------------------------------------------------------------
-#  library(DR.SC)
 #  dir.file <- "Section" ## the folders Section1 and Section2, and each includes two folders spatial and filtered_feature_bc_matrix
 #  seuList <- list()
 #  for (r in 1:2) {
 #    message("r = ", r)
-#    seuList[[r]] <- read10XVisium(paste0(dir.file, r))
+#    seuList[[r]] <- DR.SC::read10XVisium(paste0(dir.file, r))
 #  }
 #  bc2 <- seuList
 
@@ -52,12 +51,19 @@ knitr::knit_hooks$set(time_it = local({
 ## ----eval= FALSE--------------------------------------------------------------
 #  ## Get the gene-by-spot read count matrices
 #  countList <- lapply(bc2, function(x) x[["RNA"]]@counts)
-#  
+#  M <- length(countList)
 #  ## Get the meta data of each spot for each data batch
 #  metadataList <- lapply(bc2, function(x) x@meta.data)
 #  
+#  for(r in 1:M){
+#    meta_data <- metadataList[[r]]
+#    all(c("row", "col") %in% colnames(meta_data)) ## the names are correct!
+#    head(meta_data[,c("row", "col")])
+#  }
+#  
+#  
 #  ## ensure the row.names of metadata in metaList are the same as that of colnames count matrix in countList
-#  M <- length(countList)
+#  
 #  for(r in 1:M){
 #    row.names(metadataList[[r]]) <- colnames(countList[[r]])
 #  }
@@ -72,6 +78,7 @@ knitr::knit_hooks$set(time_it = local({
 #  
 #  bc2 <- seuList
 #  rm(seuList)
+#  head(meta_data[,c("row", "col")])
 
 ## ----eval =  FALSE------------------------------------------------------------
 #  ## Create PRECASTObject.
@@ -104,7 +111,7 @@ knitr::knit_hooks$set(time_it = local({
 ## ----eval =  FALSE------------------------------------------------------------
 #  ## backup the fitting results in resList
 #  resList <- PRECASTObj@resList
-#  PRECASTObj <- selectModel(PRECASTObj)
+#  PRECASTObj <- SelectModel(PRECASTObj)
 #  
 
 ## ----eval =  FALSE------------------------------------------------------------
@@ -167,6 +174,6 @@ knitr::knit_hooks$set(time_it = local({
 #          axis.text.y = element_text(size=5, face= "italic", family='serif'))
 #  p1
 
-## ----eval =  FALSE------------------------------------------------------------
-#  sessionInfo()
+## -----------------------------------------------------------------------------
+sessionInfo()
 

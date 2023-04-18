@@ -38,8 +38,15 @@ knitr::knit_hooks$set(time_it = local({
 #  dlpfc_151672 ## a list including two Seurat object
 
 ## ----eval = FALSE-------------------------------------------------------------
+#  meta_data <- dlpfc_151672@meta.data
+#  all(c("row", "col") %in% colnames(meta_data)) ## the names are correct!
+#  head(meta_data[,c("row", "col")])
+
+## ----eval = FALSE-------------------------------------------------------------
+#  set.seed(2023)
 #  library(PRECAST)
-#  preobj <- CreatePRECASTObject(seuList = list(dlpfc_151672))
+#  preobj <- CreatePRECASTObject(seuList = list(dlpfc_151672), selectGenesMethod="HVGs",
+#                                gene.number = 2000) #
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  ## check the number of genes/features after filtering step
@@ -59,8 +66,18 @@ knitr::knit_hooks$set(time_it = local({
 ## ----eval = FALSE-------------------------------------------------------------
 #  ## backup the fitting results in resList
 #  resList <- PRECASTObj@resList
-#  PRECASTObj <- selectModel(PRECASTObj)
+#  PRECASTObj <- SelectModel(PRECASTObj)
 #  ari_precast <- mclust::adjustedRandIndex(PRECASTObj@resList$cluster[[1]], PRECASTObj@seulist[[1]]$layer_guess_reordered)
+
+## ----eval =FALSE--------------------------------------------------------------
+#  PRECASTObj2 <- AddParSetting(PRECASTObj, Sigma_equal = FALSE, coreNum = 4,
+#                              maxIter=30, verbose = TRUE) # set 4 cores to run in parallel.
+#  PRECASTObj2 <- PRECAST(PRECASTObj2, K= 5:8)
+#  ## backup the fitting results in resList
+#  resList2 <- PRECASTObj2@resList
+#  PRECASTObj2 <- SelectModel(PRECASTObj2)
+#  str(PRECASTObj2@resList)
+#  mclust::adjustedRandIndex(PRECASTObj2@resList$cluster[[1]], PRECASTObj2@seulist[[1]]$layer_guess_reordered)
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  seuInt <- PRECASTObj@seulist[[1]]
@@ -97,6 +114,6 @@ knitr::knit_hooks$set(time_it = local({
 ## ----eval = FALSE, fig.width=10, fig.height=4---------------------------------
 #  drawFigs(list(p_tsne, p_tsne_drsc), layout.dim = c(1,2))
 
-## ----eval = FALSE-------------------------------------------------------------
-#  sessionInfo()
+## -----------------------------------------------------------------------------
+sessionInfo()
 

@@ -27,7 +27,11 @@ knitr::opts_chunk$set(
 
 ## ----eval = FALSE-------------------------------------------------------------
 #  ## Get the gene-by-spot read count matrices
-#  countList <- lapply(data_simu, function(x) x[["RNA"]]@counts)
+#  countList <- lapply(data_simu, function(x){
+#    assay <- DefaultAssay(x)
+#    GetAssayData(x, assay = assay, slot='counts')
+#  
+#  } )
 #  
 #  ## Check the spatial coordinates: Yes, they are named as "row" and "col"!
 #  head(data_simu[[1]]@meta.data)

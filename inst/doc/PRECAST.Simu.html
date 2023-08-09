@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wei Liu" />
 
-<meta name="date" content="2023-04-18" />
+<meta name="date" content="2023-08-08" />
 
 <title>PRECAST: simulation</title>
 
@@ -318,7 +318,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">PRECAST: simulation</h1>
 <h4 class="author">Wei Liu</h4>
-<h4 class="date">2023-04-18</h4>
+<h4 class="date">2023-08-08</h4>
 
 
 
@@ -351,28 +351,32 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li>Note: the spatial coordinates must be contained in the meta data and named as <code>row</code> and <code>col</code>, which benefits the identification of spaital coordinates by PRECAST.</li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">## Get the gene-by-spot read count matrices</span></a>
-<a class="sourceLine" id="cb7-2" title="2">countList &lt;-<span class="st"> </span><span class="kw">lapply</span>(data_simu, <span class="cf">function</span>(x) x[[<span class="st">&quot;RNA&quot;</span>]]<span class="op">@</span>counts)</a>
-<a class="sourceLine" id="cb7-3" title="3"></a>
-<a class="sourceLine" id="cb7-4" title="4"><span class="co">## Check the spatial coordinates: Yes, they are named as &quot;row&quot; and &quot;col&quot;!</span></a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="kw">head</span>(data_simu[[<span class="dv">1</span>]]<span class="op">@</span>meta.data)</a>
-<a class="sourceLine" id="cb7-6" title="6"></a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="co">## Get the meta data of each spot for each data batch</span></a>
-<a class="sourceLine" id="cb7-8" title="8">metadataList &lt;-<span class="st"> </span><span class="kw">lapply</span>(data_simu, <span class="cf">function</span>(x) x<span class="op">@</span>meta.data)</a>
-<a class="sourceLine" id="cb7-9" title="9"></a>
+<a class="sourceLine" id="cb7-2" title="2">countList &lt;-<span class="st"> </span><span class="kw">lapply</span>(data_simu, <span class="cf">function</span>(x){</a>
+<a class="sourceLine" id="cb7-3" title="3">  assay &lt;-<span class="st"> </span><span class="kw">DefaultAssay</span>(x)</a>
+<a class="sourceLine" id="cb7-4" title="4">  <span class="kw">GetAssayData</span>(x, <span class="dt">assay =</span> assay, <span class="dt">slot=</span><span class="st">&#39;counts&#39;</span>)</a>
+<a class="sourceLine" id="cb7-5" title="5">  </a>
+<a class="sourceLine" id="cb7-6" title="6">} )</a>
+<a class="sourceLine" id="cb7-7" title="7"></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">## Check the spatial coordinates: Yes, they are named as &quot;row&quot; and &quot;col&quot;!</span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="kw">head</span>(data_simu[[<span class="dv">1</span>]]<span class="op">@</span>meta.data)</a>
 <a class="sourceLine" id="cb7-10" title="10"></a>
-<a class="sourceLine" id="cb7-11" title="11"><span class="co">## ensure the row.names of metadata in metaList are the same as that of colnames count matrix in countList</span></a>
-<a class="sourceLine" id="cb7-12" title="12">M &lt;-<span class="st"> </span><span class="kw">length</span>(countList)</a>
-<a class="sourceLine" id="cb7-13" title="13"><span class="cf">for</span>(r <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>M){</a>
-<a class="sourceLine" id="cb7-14" title="14">  <span class="kw">row.names</span>(metadataList[[r]]) &lt;-<span class="st"> </span><span class="kw">colnames</span>(countList[[r]])</a>
-<a class="sourceLine" id="cb7-15" title="15">}</a>
-<a class="sourceLine" id="cb7-16" title="16"></a>
-<a class="sourceLine" id="cb7-17" title="17"></a>
-<a class="sourceLine" id="cb7-18" title="18"><span class="co">## Create the Seurat list  object</span></a>
-<a class="sourceLine" id="cb7-19" title="19"></a>
-<a class="sourceLine" id="cb7-20" title="20">seuList &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
-<a class="sourceLine" id="cb7-21" title="21"><span class="cf">for</span>(r <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>M){</a>
-<a class="sourceLine" id="cb7-22" title="22">  seuList[[r]] &lt;-<span class="st"> </span><span class="kw">CreateSeuratObject</span>(<span class="dt">counts =</span> countList[[r]], <span class="dt">meta.data=</span>metadataList[[r]], <span class="dt">project =</span> <span class="st">&quot;PRECASTsimu&quot;</span>)</a>
-<a class="sourceLine" id="cb7-23" title="23">}</a></code></pre></div>
+<a class="sourceLine" id="cb7-11" title="11"><span class="co">## Get the meta data of each spot for each data batch</span></a>
+<a class="sourceLine" id="cb7-12" title="12">metadataList &lt;-<span class="st"> </span><span class="kw">lapply</span>(data_simu, <span class="cf">function</span>(x) x<span class="op">@</span>meta.data)</a>
+<a class="sourceLine" id="cb7-13" title="13"></a>
+<a class="sourceLine" id="cb7-14" title="14"></a>
+<a class="sourceLine" id="cb7-15" title="15"><span class="co">## ensure the row.names of metadata in metaList are the same as that of colnames count matrix in countList</span></a>
+<a class="sourceLine" id="cb7-16" title="16">M &lt;-<span class="st"> </span><span class="kw">length</span>(countList)</a>
+<a class="sourceLine" id="cb7-17" title="17"><span class="cf">for</span>(r <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>M){</a>
+<a class="sourceLine" id="cb7-18" title="18">  <span class="kw">row.names</span>(metadataList[[r]]) &lt;-<span class="st"> </span><span class="kw">colnames</span>(countList[[r]])</a>
+<a class="sourceLine" id="cb7-19" title="19">}</a>
+<a class="sourceLine" id="cb7-20" title="20"></a>
+<a class="sourceLine" id="cb7-21" title="21"></a>
+<a class="sourceLine" id="cb7-22" title="22"><span class="co">## Create the Seurat list  object</span></a>
+<a class="sourceLine" id="cb7-23" title="23"></a>
+<a class="sourceLine" id="cb7-24" title="24">seuList &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb7-25" title="25"><span class="cf">for</span>(r <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>M){</a>
+<a class="sourceLine" id="cb7-26" title="26">  seuList[[r]] &lt;-<span class="st"> </span><span class="kw">CreateSeuratObject</span>(<span class="dt">counts =</span> countList[[r]], <span class="dt">meta.data=</span>metadataList[[r]], <span class="dt">project =</span> <span class="st">&quot;PRECASTsimu&quot;</span>)</a>
+<a class="sourceLine" id="cb7-27" title="27">}</a></code></pre></div>
 <div id="prepare-the-precastobject-with-preprocessing-step." class="section level3">
 <h3>Prepare the PRECASTObject with preprocessing step.</h3>
 <p>Next, we use <code>CreatePRECASTObject()</code> to create a PRECASTObject based on the Seurat list object <code>seuList</code>. This function will do three things:</p>
@@ -524,7 +528,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb23-17" title="17"><span class="co">#&gt; [8] base     </span></a>
 <a class="sourceLine" id="cb23-18" title="18"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb23-19" title="19"><span class="co">#&gt; other attached packages:</span></a>
-<a class="sourceLine" id="cb23-20" title="20"><span class="co">#&gt; [1] PRECAST_1.6    gtools_3.9.2.2</span></a>
+<a class="sourceLine" id="cb23-20" title="20"><span class="co">#&gt; [1] PRECAST_1.6.2  gtools_3.9.2.2</span></a>
 <a class="sourceLine" id="cb23-21" title="21"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb23-22" title="22"><span class="co">#&gt; loaded via a namespace (and not attached):</span></a>
 <a class="sourceLine" id="cb23-23" title="23"><span class="co">#&gt;   [1] backports_1.4.1             GiRaF_1.0.1                </span></a>
@@ -596,7 +600,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb23-89" title="89"><span class="co">#&gt; [133] vipor_0.4.5                 IRanges_2.28.0             </span></a>
 <a class="sourceLine" id="cb23-90" title="90"><span class="co">#&gt; [135] parallelly_1.32.0           codetools_0.2-18           </span></a>
 <a class="sourceLine" id="cb23-91" title="91"><span class="co">#&gt; [137] MASS_7.3-55                 assertthat_0.2.1           </span></a>
-<a class="sourceLine" id="cb23-92" title="92"><span class="co">#&gt; [139] DR.SC_3.2                   SummarizedExperiment_1.24.0</span></a>
+<a class="sourceLine" id="cb23-92" title="92"><span class="co">#&gt; [139] DR.SC_3.3                   SummarizedExperiment_1.24.0</span></a>
 <a class="sourceLine" id="cb23-93" title="93"><span class="co">#&gt; [141] SeuratObject_4.1.0          sctransform_0.3.3          </span></a>
 <a class="sourceLine" id="cb23-94" title="94"><span class="co">#&gt; [143] GenomeInfoDbData_1.2.7      S4Vectors_0.32.3           </span></a>
 <a class="sourceLine" id="cb23-95" title="95"><span class="co">#&gt; [145] mgcv_1.8-39                 beachmat_2.10.0            </span></a>

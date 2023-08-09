@@ -50,7 +50,13 @@ knitr::knit_hooks$set(time_it = local({
 
 ## ----eval= FALSE--------------------------------------------------------------
 #  ## Get the gene-by-spot read count matrices
-#  countList <- lapply(bc2, function(x) x[["RNA"]]@counts)
+#  ## countList <- lapply(bc2, function(x) x[["RNA"]]@counts)
+#  countList <- lapply(bc2, function(x){
+#    assay <- DefaultAssay(x)
+#    GetAssayData(x, assay = assay, slot='counts')
+#  
+#  } )
+#  
 #  M <- length(countList)
 #  ## Get the meta data of each spot for each data batch
 #  metadataList <- lapply(bc2, function(x) x@meta.data)
@@ -83,8 +89,7 @@ knitr::knit_hooks$set(time_it = local({
 ## ----eval =  FALSE------------------------------------------------------------
 #  ## Create PRECASTObject.
 #  set.seed(2022)
-#  PRECASTObj <- CreatePRECASTObject(bc2, project = 'BC2', gene.number = 2000, selectGenesMethod = 'SPARK-X',
-#                                    premin.spots = 20,  premin.features=20, postmin.spots = 1, postmin.features = 10)
+#  PRECASTObj <- CreatePRECASTObject(bc2, project = 'BC2', gene.number = 2000, selectGenesMethod = 'SPARK-X', premin.spots = 20,  premin.features=20, postmin.spots = 1, postmin.features = 10)
 #  
 #  ## User can retain the raw seuList by the following commond.
 #  ##  PRECASTObj <-  CreatePRECASTObject(seuList, customGenelist=row.names(seuList[[1]]), rawData.preserve = TRUE)

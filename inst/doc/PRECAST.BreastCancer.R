@@ -105,7 +105,7 @@ knitr::knit_hooks$set(time_it = local({
 #  PRECASTObj <-  AddAdjList(PRECASTObj, platform = "Visium")
 #  
 #  ## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the information in the algorithm.
-#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, verbose=TRUE, int.model=NULL)
+#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, verbose=TRUE, maxIter=30)
 #  
 
 ## ----eval =  FALSE------------------------------------------------------------

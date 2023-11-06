@@ -25,6 +25,7 @@
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -104,13 +105,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -327,9 +335,18 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>The package can be loaded with the command:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(<span class="st">&quot;PRECAST&quot;</span>)</a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="co">#&gt; 载入需要的程辑包：parallel</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="co">#&gt; 载入需要的程辑包：gtools</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="co">#&gt; PRECAST :  An efficient data integration method is provided for multiple spatial transcriptomics data with non-cluster-relevant effects such as the complex batch effects. It unifies spatial factor analysis simultaneously with spatial clustering and embedding alignment, requiring only partially shared cell/domain clusters across datasets. More details can be referred to Wei Liu, et al. (2023) &lt;doi:10.1038/s41467-023-35947-w&gt;.   Check out our Package website (https://feiyoung.github.io/PRECAST/index.html) for a more complete description of the methods and analyses</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-3" title="3"><span class="co">#&gt; Loading required package: parallel</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="co">#&gt; Loading required package: gtools</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="co">#&gt; Warning: package &#39;gtools&#39; was built under R version 4.2.2</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="co">#&gt; The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,</span></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="co">#&gt; which was just loaded, will retire in October 2023.</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="co">#&gt; Please refer to R-spatial evolution reports for details, especially</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co">#&gt; https://r-spatial.org/r/2023/05/15/evolution4.html.</span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="co">#&gt; It may be desirable to make the sf package available;</span></a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="co">#&gt; package maintainers should consider adding sf to Suggests:.</span></a>
+<a class="sourceLine" id="cb1-12" title="12"><span class="co">#&gt; The sp package is now running under evolution status 2</span></a>
+<a class="sourceLine" id="cb1-13" title="13"><span class="co">#&gt;      (status 2 uses the sf package in place of rgdal)</span></a>
+<a class="sourceLine" id="cb1-14" title="14"><span class="co">#&gt; PRECAST :  An efficient data integration method is provided for multiple spatial transcriptomics data with non-cluster-relevant effects such as the complex batch effects. It unifies spatial factor analysis simultaneously with spatial clustering and embedding alignment, requiring only partially shared cell/domain clusters across datasets. More details can be referred to Wei Liu, et al. (2023) &lt;doi:10.1038/s41467-023-35947-w&gt;.   Check out our Package website (https://feiyoung.github.io/PRECAST/index.html) for a more complete description of the methods and analyses</span></a></code></pre></div>
 </div>
 <div id="setup-on-linux-or-macos-system" class="section level2">
 <h2>Setup on Linux or MacOS system</h2>

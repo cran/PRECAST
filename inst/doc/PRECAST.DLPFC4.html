@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Wei Liu" />
+
+<meta name="date" content="2024-01-24" />
+
+<title>PRECAST: Four DLPFC Sample Analysis</title>
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">PRECAST: Four DLPFC Sample Analysis</h1>
+<h4 class="author">Wei Liu</h4>
+<h4 class="date">2024-01-24</h4>
+
+
+
+<p>This vignette introduces the PRECAST workflow for the analysis of four spatial transcriptomics datasets. The workflow consists of three steps</p>
+<ul>
+<li>Independent preprocessing and model setting</li>
+<li>Probabilistic embedding and clustering using PRECAST model</li>
+<li>Downstream analysis (i.e. visualization of clusters and embeddings)</li>
+</ul>
+<p>We demonstrate the use of PRECAST to four human dorsolateral prefrontal cortex Visium data. Download the data to R</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(Seurat))</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(SingleCellExperiment))</a>
+<a class="sourceLine" id="cb1-3" title="3">name_ID4 &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">c</span>(<span class="dv">151673</span>, <span class="dv">151674</span>, <span class="dv">151675</span>, <span class="dv">151676</span>))</a>
+<a class="sourceLine" id="cb1-4" title="4"></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="co">### Read data in an online manner</span></a>
+<a class="sourceLine" id="cb1-6" title="6">n_ID &lt;-<span class="st"> </span><span class="kw">length</span>(name_ID4)</a>
+<a class="sourceLine" id="cb1-7" title="7">url_brainA &lt;-<span class="st"> &quot;https://github.com/feiyoung/DR-SC.Analysis/raw/main/data/DLPFC_data/&quot;</span></a>
+<a class="sourceLine" id="cb1-8" title="8">url_brainB &lt;-<span class="st"> &quot;.rds&quot;</span></a>
+<a class="sourceLine" id="cb1-9" title="9">seuList &lt;-<span class="st"> </span><span class="kw">list</span>()</a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(ProFAST)) {</a>
+<a class="sourceLine" id="cb1-11" title="11">    remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;feiyoung/ProFAST&quot;</span>)</a>
+<a class="sourceLine" id="cb1-12" title="12">}</a>
+<a class="sourceLine" id="cb1-13" title="13"><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n_ID) {</a>
+<a class="sourceLine" id="cb1-14" title="14">    <span class="co"># i &lt;- 1</span></a>
+<a class="sourceLine" id="cb1-15" title="15">    <span class="kw">cat</span>(<span class="st">&quot;input brain data&quot;</span>, i, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb1-16" title="16">    <span class="co"># load and read data</span></a>
+<a class="sourceLine" id="cb1-17" title="17">    dlpfc &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">url</span>(<span class="kw">paste0</span>(url_brainA, name_ID4[i], url_brainB)))</a>
+<a class="sourceLine" id="cb1-18" title="18">    count &lt;-<span class="st"> </span>dlpfc<span class="op">@</span>assays<span class="op">@</span>data<span class="op">$</span>counts</a>
+<a class="sourceLine" id="cb1-19" title="19">    <span class="kw">row.names</span>(count) &lt;-<span class="st"> </span>ProFAST<span class="op">::</span><span class="kw">transferGeneNames</span>(<span class="kw">row.names</span>(count), <span class="dt">species =</span> <span class="st">&quot;Human&quot;</span>)</a>
+<a class="sourceLine" id="cb1-20" title="20">    seu1 &lt;-<span class="st"> </span><span class="kw">CreateSeuratObject</span>(<span class="dt">counts =</span> count, <span class="dt">meta.data =</span> <span class="kw">as.data.frame</span>(<span class="kw">colData</span>(dlpfc)), <span class="dt">min.cells =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb1-21" title="21">        <span class="dt">min.features =</span> <span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb1-22" title="22">    seuList[[i]] &lt;-<span class="st"> </span>seu1</a>
+<a class="sourceLine" id="cb1-23" title="23">}</a>
+<a class="sourceLine" id="cb1-24" title="24"><span class="co"># saveRDS(seuList, file=&#39;seuList4.RDS&#39;)</span></a></code></pre></div>
+<p>The package can be loaded with the command:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(PRECAST)</a></code></pre></div>
+<div id="compare-precast-with-dr-sc-in-analyzing-one-sample" class="section level2">
+<h2>Compare PRECAST with DR-SC in analyzing one sample</h2>
+<p>First, we view the the spatial transcriptomics data with Visium platform.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">seuList &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="st">&quot;seuList4.RDS&quot;</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2">seuList  <span class="co">## a list including  Seurat objects</span></a></code></pre></div>
+<p>check the meta data that must include the spatial coordinates named “row” and “col”, respectively. If the names are not, they are required to rename them.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">metadataList &lt;-<span class="st"> </span><span class="kw">lapply</span>(seuList, <span class="cf">function</span>(x) x<span class="op">@</span>meta.data)</a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="cf">for</span> (r <span class="cf">in</span> <span class="kw">seq_along</span>(metadataList)) {</a>
+<a class="sourceLine" id="cb4-4" title="4">    meta_data &lt;-<span class="st"> </span>metadataList[[r]]</a>
+<a class="sourceLine" id="cb4-5" title="5">    <span class="kw">cat</span>(<span class="kw">all</span>(<span class="kw">c</span>(<span class="st">&quot;row&quot;</span>, <span class="st">&quot;col&quot;</span>) <span class="op">%in%</span><span class="st"> </span><span class="kw">colnames</span>(meta_data)), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)  <span class="co">## the names are correct!</span></a>
+<a class="sourceLine" id="cb4-6" title="6"></a>
+<a class="sourceLine" id="cb4-7" title="7">}</a></code></pre></div>
+<div id="prepare-the-precastobject." class="section level3">
+<h3>Prepare the PRECASTObject.</h3>
+<p>Create a PRECASTObj object to prepare for PRECAST models. Here, we only show the <code>HVGs</code> method to select the 2000 highly variable genes, but users are able to choose more genes or also use the <code>SPARK-X</code> to choose the spatially variable genes.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">set.seed</span>(<span class="dv">2023</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2">preobj &lt;-<span class="st"> </span><span class="kw">CreatePRECASTObject</span>(<span class="dt">seuList =</span> seuList, <span class="dt">selectGenesMethod =</span> <span class="st">&quot;HVGs&quot;</span>, <span class="dt">gene.number =</span> <span class="dv">2000</span>)  <span class="co"># </span></a></code></pre></div>
+</div>
+<div id="add-the-model-setting" class="section level3">
+<h3>Add the model setting</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">## check the number of genes/features after filtering step</span></a>
+<a class="sourceLine" id="cb6-2" title="2">preobj<span class="op">@</span>seulist</a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="co">## Add adjacency matrix list for a PRECASTObj object to prepare for PRECAST model fitting.</span></a>
+<a class="sourceLine" id="cb6-4" title="4">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddAdjList</span>(preobj, <span class="dt">platform =</span> <span class="st">&quot;Visium&quot;</span>)</a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">## Add a model setting in advance for a PRECASTObj object. verbose =TRUE helps outputing the</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">## information in the algorithm.</span></a>
+<a class="sourceLine" id="cb6-7" title="7">PRECASTObj &lt;-<span class="st"> </span><span class="kw">AddParSetting</span>(PRECASTObj, <span class="dt">Sigma_equal =</span> <span class="ot">TRUE</span>, <span class="dt">coreNum =</span> <span class="dv">1</span>, <span class="dt">maxIter =</span> <span class="dv">30</span>, <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+</div>
+<div id="fit-precast" class="section level3">
+<h3>Fit PRECAST</h3>
+<p>For function <code>PRECAST</code>, users can specify the number of clusters <span class="math inline">\(K\)</span> or set <code>K</code> to be an integer vector by using modified BIC(MBIC) to determine <span class="math inline">\(K\)</span>. Here, we use user-specified number of clusters.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">### Given K</span></a>
+<a class="sourceLine" id="cb7-2" title="2">PRECASTObj &lt;-<span class="st"> </span><span class="kw">PRECAST</span>(PRECASTObj, <span class="dt">K =</span> <span class="dv">7</span>)</a></code></pre></div>
+<p>Use the function <code>SelectModel()</code> to re-organize the fitted results in PRECASTObj.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">## backup the fitting results in resList</span></a>
+<a class="sourceLine" id="cb8-2" title="2">resList &lt;-<span class="st"> </span>PRECASTObj<span class="op">@</span>resList</a>
+<a class="sourceLine" id="cb8-3" title="3">PRECASTObj &lt;-<span class="st"> </span><span class="kw">SelectModel</span>(PRECASTObj)</a>
+<a class="sourceLine" id="cb8-4" title="4">ari_precast &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(seuList), <span class="cf">function</span>(r) mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(PRECASTObj<span class="op">@</span>resList<span class="op">$</span>cluster[[r]],</a>
+<a class="sourceLine" id="cb8-5" title="5">    PRECASTObj<span class="op">@</span>seulist[[r]]<span class="op">$</span>layer_guess_reordered))</a>
+<a class="sourceLine" id="cb8-6" title="6">mat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">round</span>(ari_precast, <span class="dv">2</span>), <span class="dt">nrow =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb8-7" title="7">name_ID4 &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="kw">c</span>(<span class="dv">151673</span>, <span class="dv">151674</span>, <span class="dv">151675</span>, <span class="dv">151676</span>))</a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="kw">colnames</span>(mat) &lt;-<span class="st"> </span>name_ID4</a>
+<a class="sourceLine" id="cb8-9" title="9">DT<span class="op">::</span><span class="kw">datatable</span>(mat)</a></code></pre></div>
+<details>
+<p><summary><strong>Other options</strong></summary> Users are also able to set multiple K, then choose the best one</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">PRECASTObj2 &lt;-<span class="st"> </span><span class="kw">AddParSetting</span>(PRECASTObj, <span class="dt">Sigma_equal =</span> <span class="ot">FALSE</span>, <span class="dt">coreNum =</span> <span class="dv">4</span>, <span class="dt">maxIter =</span> <span class="dv">30</span>, <span class="dt">verbose =</span> <span class="ot">TRUE</span>)  <span class="co"># set 4 cores to run in parallel.</span></a>
+<a class="sourceLine" id="cb9-2" title="2">PRECASTObj2 &lt;-<span class="st"> </span><span class="kw">PRECAST</span>(PRECASTObj2, <span class="dt">K =</span> <span class="dv">5</span><span class="op">:</span><span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="co">## backup the fitting results in resList</span></a>
+<a class="sourceLine" id="cb9-4" title="4">resList2 &lt;-<span class="st"> </span>PRECASTObj2<span class="op">@</span>resList</a>
+<a class="sourceLine" id="cb9-5" title="5">PRECASTObj2 &lt;-<span class="st"> </span><span class="kw">SelectModel</span>(PRECASTObj2)</a></code></pre></div>
+<p>Besides, user can also use different initialization method by setting <code>int.model</code>, for example, set <code>int.model=NULL</code>; see the functions <code>AddParSetting()</code> and <code>model_set()</code> for more details.</p>
+</details>
+</div>
+<div id="integration-and-visualization" class="section level3">
+<h3>Integration and Visualization</h3>
+<p>Integrate the all samples using the <code>IntegrateSpaData</code> function. For computational efficiency, this function exclusively integrates the variable genes. Specifically, in cases where users do not specify the <code>PRECASTObj@seuList</code> or <code>seuList</code> argument within the <code>IntegrateSpaData</code> function, it automatically focuses on integrating only the variable genes. The default setting for <code>PRECASTObj@seuList</code> is <code>NULL</code> when <code>rawData.preserve</code> in <code>CreatePRECASTObject</code> is set to <code>FALSE</code>. For instance:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">print</span>(PRECASTObj<span class="op">@</span>seuList)</a>
+<a class="sourceLine" id="cb10-2" title="2">seuInt &lt;-<span class="st"> </span><span class="kw">IntegrateSpaData</span>(PRECASTObj, <span class="dt">species =</span> <span class="st">&quot;Human&quot;</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3">seuInt</a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="co">## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.</span></a></code></pre></div>
+<details>
+<p><summary><strong>Integrating all genes</strong></summary> There are two ways to use <code>IntegrateSpaData</code> integrating all genes, which will require more memory. We recommand running for all genes on server. The first one is to set value for <code>PRECASTObj@seuList</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co">## assign the raw Seurat list object to it.  For illustration, we generate a new seuList with</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="co">## more genes; For integrating all genes, users can set `seuList &lt;- bc2`.</span></a>
+<a class="sourceLine" id="cb11-3" title="3">genes &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">row.names</span>(PRECASTObj<span class="op">@</span>seulist[[<span class="dv">1</span>]]), <span class="kw">row.names</span>(seuList[[<span class="dv">1</span>]])[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>])</a>
+<a class="sourceLine" id="cb11-4" title="4">seuList_sub &lt;-<span class="st"> </span><span class="kw">lapply</span>(seuList, <span class="cf">function</span>(x) x[genes, ])</a>
+<a class="sourceLine" id="cb11-5" title="5">PRECASTObj<span class="op">@</span>seuList &lt;-<span class="st"> </span>seuList_sub  <span class="co"># </span></a>
+<a class="sourceLine" id="cb11-6" title="6">seuInt &lt;-<span class="st"> </span><span class="kw">IntegrateSpaData</span>(PRECASTObj, <span class="dt">species =</span> <span class="st">&quot;Human&quot;</span>)</a>
+<a class="sourceLine" id="cb11-7" title="7">seuInt</a></code></pre></div>
+<p>The second method is to set a value for the argument <code>seuList</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">PRECASTObj<span class="op">@</span>seuList &lt;-<span class="st"> </span><span class="ot">NULL</span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="co">## At the same time, we can set subsampling to speed up the computation.</span></a>
+<a class="sourceLine" id="cb12-3" title="3">seuInt &lt;-<span class="st"> </span><span class="kw">IntegrateSpaData</span>(PRECASTObj, <span class="dt">species =</span> <span class="st">&quot;Human&quot;</span>, <span class="dt">seuList =</span> seuList_sub, <span class="dt">subsample_rate =</span> <span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb12-4" title="4">seuInt</a></code></pre></div>
+</details>
+<p>First, user can choose a beautiful color schema using <code>chooseColors()</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">cols_cluster &lt;-<span class="st"> </span><span class="kw">chooseColors</span>(<span class="dt">palettes_name =</span> <span class="st">&quot;Classic 20&quot;</span>, <span class="dt">n_colors =</span> <span class="dv">7</span>, <span class="dt">plot_colors =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<p>Show the spatial scatter plot for clusters</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"></a>
+<a class="sourceLine" id="cb14-2" title="2">p12 &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>, <span class="dt">batch =</span> <span class="ot">NULL</span>, <span class="dt">point_size =</span> <span class="dv">1</span>, <span class="dt">cols =</span> cols_cluster, <span class="dt">combine =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb14-3" title="3">    <span class="dt">nrow.legend =</span> <span class="dv">7</span>)</a>
+<a class="sourceLine" id="cb14-4" title="4">p12</a>
+<a class="sourceLine" id="cb14-5" title="5"></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="co"># users can plot each sample by setting combine=FALSE</span></a></code></pre></div>
+<p>Users can re-plot the above figures for specific need by returning a ggplot list object. For example, we plot the spatial heatmap using a common legend.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb15-2" title="2">pList &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>, <span class="dt">batch =</span> <span class="ot">NULL</span>, <span class="dt">point_size =</span> <span class="fl">2.5</span>, <span class="dt">cols =</span> cols_cluster,</a>
+<a class="sourceLine" id="cb15-3" title="3">    <span class="dt">combine =</span> <span class="ot">FALSE</span>, <span class="dt">nrow.legend =</span> <span class="dv">7</span>)</a>
+<a class="sourceLine" id="cb15-4" title="4">pList &lt;-<span class="st"> </span><span class="kw">lapply</span>(pList, <span class="cf">function</span>(x) x <span class="op">+</span><span class="st"> </span><span class="kw">coord_flip</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_reverse</span>())</a>
+<a class="sourceLine" id="cb15-5" title="5"><span class="kw">drawFigs</span>(pList, <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="dt">common.legend =</span> <span class="ot">TRUE</span>, <span class="dt">legend.position =</span> <span class="st">&quot;right&quot;</span>, <span class="dt">align =</span> <span class="st">&quot;hv&quot;</span>)</a></code></pre></div>
+<p>Show the spatial UMAP/tNSE RGB plot to illustrate the performance in extracting features.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">AddUMAP</span>(seuInt)</a>
+<a class="sourceLine" id="cb16-2" title="2">p13List &lt;-<span class="st"> </span><span class="kw">SpaPlot</span>(seuInt, <span class="dt">batch =</span> <span class="ot">NULL</span>, <span class="dt">item =</span> <span class="st">&quot;RGB_UMAP&quot;</span>, <span class="dt">point_size =</span> <span class="dv">2</span>, <span class="dt">combine =</span> <span class="ot">FALSE</span>, <span class="dt">text_size =</span> <span class="dv">15</span>)</a>
+<a class="sourceLine" id="cb16-3" title="3">p13List &lt;-<span class="st"> </span><span class="kw">lapply</span>(p13List, <span class="cf">function</span>(x) x <span class="op">+</span><span class="st"> </span><span class="kw">coord_flip</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_reverse</span>())</a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="kw">drawFigs</span>(p13List, <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="dt">common.legend =</span> <span class="ot">TRUE</span>, <span class="dt">legend.position =</span> <span class="st">&quot;right&quot;</span>, <span class="dt">align =</span> <span class="st">&quot;hv&quot;</span>)</a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="co"># seuInt &lt;- AddTSNE(seuInt) SpaPlot(seuInt, batch=NULL,item=&#39;RGB_TSNE&#39;,point_size=2,</span></a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="co"># combine=T, text_size=15)</span></a></code></pre></div>
+<p>Show the tSNE plot based on the extracted features from PRECAST to check the performance of integration.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">seuInt &lt;-<span class="st"> </span><span class="kw">AddTSNE</span>(seuInt, <span class="dt">n_comp =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb17-2" title="2">p1 &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;cluster&quot;</span>, <span class="dt">point_size =</span> <span class="fl">0.5</span>, <span class="dt">font_family =</span> <span class="st">&quot;serif&quot;</span>, <span class="dt">cols =</span> cols_cluster,</a>
+<a class="sourceLine" id="cb17-3" title="3">    <span class="dt">border_col =</span> <span class="st">&quot;gray10&quot;</span>, <span class="dt">nrow.legend =</span> <span class="dv">14</span>, <span class="dt">legend_pos =</span> <span class="st">&quot;right&quot;</span>)  <span class="co"># Times New Roman</span></a>
+<a class="sourceLine" id="cb17-4" title="4">p2 &lt;-<span class="st"> </span><span class="kw">dimPlot</span>(seuInt, <span class="dt">item =</span> <span class="st">&quot;batch&quot;</span>, <span class="dt">point_size =</span> <span class="fl">0.5</span>, <span class="dt">font_family =</span> <span class="st">&quot;serif&quot;</span>, <span class="dt">legend_pos =</span> <span class="st">&quot;right&quot;</span>)</a>
+<a class="sourceLine" id="cb17-5" title="5"></a>
+<a class="sourceLine" id="cb17-6" title="6"><span class="kw">drawFigs</span>(<span class="kw">list</span>(p1, p2), <span class="dt">layout.dim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="dt">legend.position =</span> <span class="st">&quot;right&quot;</span>, <span class="dt">align =</span> <span class="st">&quot;hv&quot;</span>)</a></code></pre></div>
+<p>Combined differential expression analysis</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">library</span>(Seurat)</a>
+<a class="sourceLine" id="cb18-2" title="2">dat_deg &lt;-<span class="st"> </span><span class="kw">FindAllMarkers</span>(seuInt)</a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb18-4" title="4">n &lt;-<span class="st"> </span><span class="dv">5</span></a>
+<a class="sourceLine" id="cb18-5" title="5">dat_deg <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb18-6" title="6"><span class="st">    </span><span class="kw">group_by</span>(cluster) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb18-7" title="7"><span class="st">    </span><span class="kw">top_n</span>(<span class="dt">n =</span> n, <span class="dt">wt =</span> avg_log2FC) -&gt;<span class="st"> </span>top10</a></code></pre></div>
+<p>Plot DE genes’ heatmap for each spatial domain identified by PRECAST.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb19-2" title="2"><span class="co">## HeatMap</span></a>
+<a class="sourceLine" id="cb19-3" title="3">p1 &lt;-<span class="st"> </span><span class="kw">DotPlot</span>(seuInt, <span class="dt">features =</span> <span class="kw">unique</span>(top10<span class="op">$</span>gene), <span class="dt">col.min =</span> <span class="dv">0</span>, <span class="dt">col.max =</span> <span class="dv">1</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">45</span>,</a>
+<a class="sourceLine" id="cb19-4" title="4">    <span class="dt">hjust =</span> <span class="dv">1</span>, <span class="dt">size =</span> <span class="dv">8</span>))</a>
+<a class="sourceLine" id="cb19-5" title="5">p1</a></code></pre></div>
+<details>
+<p><summary><strong>Session Info</strong></summary></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">sessionInfo</span>()</a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="co">#&gt; R version 4.1.2 (2021-11-01)</span></a>
+<a class="sourceLine" id="cb20-3" title="3"><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span></a>
+<a class="sourceLine" id="cb20-4" title="4"><span class="co">#&gt; Running under: Windows 10 x64 (build 22621)</span></a>
+<a class="sourceLine" id="cb20-5" title="5"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb20-6" title="6"><span class="co">#&gt; Matrix products: default</span></a>
+<a class="sourceLine" id="cb20-7" title="7"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb20-8" title="8"><span class="co">#&gt; locale:</span></a>
+<a class="sourceLine" id="cb20-9" title="9"><span class="co">#&gt; [1] LC_COLLATE=C                              </span></a>
+<a class="sourceLine" id="cb20-10" title="10"><span class="co">#&gt; [2] LC_CTYPE=Chinese (Simplified)_China.936   </span></a>
+<a class="sourceLine" id="cb20-11" title="11"><span class="co">#&gt; [3] LC_MONETARY=Chinese (Simplified)_China.936</span></a>
+<a class="sourceLine" id="cb20-12" title="12"><span class="co">#&gt; [4] LC_NUMERIC=C                              </span></a>
+<a class="sourceLine" id="cb20-13" title="13"><span class="co">#&gt; [5] LC_TIME=Chinese (Simplified)_China.936    </span></a>
+<a class="sourceLine" id="cb20-14" title="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb20-15" title="15"><span class="co">#&gt; attached base packages:</span></a>
+<a class="sourceLine" id="cb20-16" title="16"><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></a>
+<a class="sourceLine" id="cb20-17" title="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb20-18" title="18"><span class="co">#&gt; loaded via a namespace (and not attached):</span></a>
+<a class="sourceLine" id="cb20-19" title="19"><span class="co">#&gt;  [1] digest_0.6.29   R6_2.5.1        jsonlite_1.8.0  formatR_1.11   </span></a>
+<a class="sourceLine" id="cb20-20" title="20"><span class="co">#&gt;  [5] magrittr_2.0.3  evaluate_0.15   stringi_1.7.6   rlang_1.1.0    </span></a>
+<a class="sourceLine" id="cb20-21" title="21"><span class="co">#&gt;  [9] cli_3.2.0       rstudioapi_0.13 jquerylib_0.1.4 bslib_0.3.1    </span></a>
+<a class="sourceLine" id="cb20-22" title="22"><span class="co">#&gt; [13] rmarkdown_2.11  tools_4.1.2     stringr_1.4.0   xfun_0.29      </span></a>
+<a class="sourceLine" id="cb20-23" title="23"><span class="co">#&gt; [17] yaml_2.3.6      fastmap_1.1.0   compiler_4.1.2  htmltools_0.5.2</span></a>
+<a class="sourceLine" id="cb20-24" title="24"><span class="co">#&gt; [21] knitr_1.37      sass_0.4.1</span></a></code></pre></div>
+</details>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

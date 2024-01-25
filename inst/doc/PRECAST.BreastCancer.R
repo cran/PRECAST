@@ -120,9 +120,26 @@ knitr::knit_hooks$set(time_it = local({
 #  
 
 ## ----eval =  FALSE------------------------------------------------------------
+#  print(PRECASTObj@seuList)
 #  seuInt <- IntegrateSpaData(PRECASTObj, species='Human')
 #  seuInt
 #  ## The low-dimensional embeddings obtained by PRECAST are saved in PRECAST reduction slot.
+
+## ----eval =FALSE--------------------------------------------------------------
+#  ## assign the raw Seurat list object to it
+#  ## For illustration, we generate a new seuList with more genes;
+#  ## For integrating all genes, users can set `seuList <- bc2`.
+#  genes <- c(row.names(PRECASTObj@seulist[[1]]), row.names(bc2[[1]])[1:10])
+#  seuList <- lapply(bc2, function(x) x[genes,])
+#  PRECASTObj@seuList <- seuList #
+#  seuInt <- IntegrateSpaData(PRECASTObj, species='Human')
+#  seuInt
+
+## ----eval =FALSE--------------------------------------------------------------
+#  PRECASTObj@seuList <- NULL
+#  ## At the same time, we can set subsampling to speed up the computation.
+#  seuInt <- IntegrateSpaData(PRECASTObj, species='Human', seuList=seuList, subsample_rate = 0.5)
+#  seuInt
 
 ## ----eval =  FALSE------------------------------------------------------------
 #  cols_cluster <- chooseColors(palettes_name = 'Classic 20', n_colors=14, plot_colors = TRUE)

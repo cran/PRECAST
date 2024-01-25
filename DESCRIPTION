@@ -1,8 +1,8 @@
 Package: PRECAST
 Type: Package
 Title: Embedding and Clustering with Alignment for Spatial Datasets
-Version: 1.6.3
-Date: 2023-11-06
+Version: 1.6.4
+Date: 2024-01-24
 Authors@R: 
     c(person(given = "Wei",
              family = "Liu",
@@ -33,6 +33,6 @@ LinkingTo: Rcpp, RcppArmadillo
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2023-11-06 02:13:15 UTC; Liuxianju
+Packaged: 2024-01-24 10:53:58 UTC; Liuxianju
 Repository: CRAN
-Date/Publication: 2023-11-06 05:50:08 UTC
+Date/Publication: 2024-01-25 06:00:02 UTC

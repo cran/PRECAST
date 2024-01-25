@@ -61,7 +61,8 @@ For usage examples and guided walkthroughs, check the `vignettes` directory of t
 
 * [Single SRT data analysis](https://feiyoung.github.io/PRECAST/articles/PRECAST.DLPFC.html)
 * [Toy examples for integrating three batches](https://feiyoung.github.io/PRECAST/articles/PRECAST.Simu.html)
-* [Integration across experimental batches](https://feiyoung.github.io/PRECAST/articles/PRECAST.BreastCancer.html)
+* [Integration across experimental batches: DLPFC](https://feiyoung.github.io/PRECAST/articles/PRECAST.DLPFC4.html)
+* [Integration across experimental batches: breast cancer](https://feiyoung.github.io/PRECAST/articles/PRECAST.BreastCancer.html)
 
 
 
@@ -108,6 +109,9 @@ install.packages("DR.SC")
 For an example of typical PRECAST usage, please see our [Package Website](https://feiyoung.github.io/PRECAST/index.html) for a demonstration and overview of the functions included in PRECAST.
 
 # NEWs
+PRECAST version 1.6.4 (2024-01-24)
+* Update `IntegrateSpaData()` to make it able to remove unwanted variations for all genes rather than only variable genes.
+
 
 PRECAST version 1.6.2 (2023-08-02)
 * Update the code to ensure compatibility with Seurat V5.

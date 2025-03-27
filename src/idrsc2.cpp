@@ -12,7 +12,7 @@
 
 
 
-#define INT_MIN (-INT_MAX - 1)
+// #define INT_MIN (-INT_MAX - 1)
 
 using namespace Rcpp;
 using namespace arma;
@@ -538,7 +538,7 @@ Objidrsc2 idrsc2(const field<MATTYPE>& Xf, const field<sp_mat> Adjf, const field
   // If p is sufficient large, loglik can not be computed.
   // But this can be solved by some programming tricks.
   VECTYPE loglik(maxIter);
-  loglik(0) = INT_MIN;
+  loglik(0) = -1e15; // INT_MIN
   MATTYPE Nmat(r_max, K);
   
   // Initiailize some objects that will be used in algorithm

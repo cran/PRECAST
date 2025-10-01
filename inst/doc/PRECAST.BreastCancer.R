@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -142,7 +142,7 @@ knitr::knit_hooks$set(time_it = local({
 #  seuInt
 
 ## ----eval =  FALSE------------------------------------------------------------
-#  cols_cluster <- chooseColors(palettes_name = 'Classic 20', n_colors=14, plot_colors = TRUE)
+#  cols_cluster <- chooseColors(palettes_name = 'Classic 20', n_colors=14, plot_colors = FALSE)
 
 ## ----eval =  FALSE, fig.height = 4, fig.width=9-------------------------------
 #  
@@ -150,12 +150,12 @@ knitr::knit_hooks$set(time_it = local({
 #  p12
 #  # users can plot each sample by setting combine=FALSE
 
-## ----eval =  FALSE, fig.height = 4, fig.width=8.5-----------------------------
+## ----eval =  FALSE, fig.height = 4, fig.width=7.5-----------------------------
 #  pList <- SpaPlot(seuInt, item='cluster', batch=NULL,point_size=1, cols=cols_cluster, combine=FALSE, nrow.legend=7)
 #  drawFigs(pList, layout.dim = c(1,2), common.legend = TRUE, legend.position = 'right', align='hv')
 #  
 
-## ----eval =  FALSE, fig.height = 4, fig.width=5.5-----------------------------
+## ----eval =  FALSE, fig.height = 4, fig.width=5.7-----------------------------
 #  seuInt <- AddUMAP(seuInt)
 #  p13 <- SpaPlot(seuInt, batch=NULL,item='RGB_UMAP',point_size=2, combine=TRUE, text_size=15)
 #  p13

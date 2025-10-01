@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -76,7 +76,7 @@ knitr::opts_chunk$set(
 #  PRECASTObj <-  AddAdjList(PRECASTObj, platform = "Visium")
 #  
 #  ## Add a model setting in advance for a PRECASTObj object: verbose =TRUE helps outputing the information in the algorithm; coreNum set the how many cores are used in PRECAST. If you run PRECAST for multiple number of clusters, you can set multiple cores; otherwise, set it to 1.
-#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, maxIter=30, verbose=TRUE,
+#  PRECASTObj <- AddParSetting(PRECASTObj, Sigma_equal=FALSE, maxIter=30, verbose=TRUE, int.model='kmeans',
 #                               coreNum =1)
 
 ## ----eval = FALSE-------------------------------------------------------------

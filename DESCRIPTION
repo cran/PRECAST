@@ -1,8 +1,9 @@
 Package: PRECAST
 Type: Package
-Title: Embedding and Clustering with Alignment for Spatial Datasets
-Version: 1.6.6
-Date: 2025-03-27
+Title: Embedding and Clustering with Alignment for Spatial Omics
+        Datasets
+Version: 1.7
+Date: 2025-09-29
 Authors@R: 
     c(person(given = "Wei",
              family = "Liu",
@@ -21,10 +22,10 @@ Maintainer: Wei Liu <liuweideng@gmail.com>
 Description: An efficient data integration method is provided for multiple spatial transcriptomics data with non-cluster-relevant effects such as the complex batch effects. It unifies spatial factor analysis simultaneously with spatial clustering and embedding alignment, requiring only partially shared cell/domain clusters across datasets. More details can be referred to Wei Liu, et al. (2023) <doi:10.1038/s41467-023-35947-w>.
 License: GPL-3
 Depends: parallel, gtools, R (>= 4.0.0)
-Imports: GiRaF, MASS, Matrix, mclust, methods, purrr, utils, Seurat,
+Imports: MASS, Matrix, mclust, methods, purrr, utils, Seurat, irlba,
         cowplot, patchwork, scater, pbapply, ggthemes, dplyr, ggplot2,
-        stats, DR.SC, scales, ggpubr, graphics, colorspace, Rcpp (>=
-        1.0.5)
+        stats, harmony, DR.SC, scales, ggpubr, graphics, colorspace,
+        Rcpp (>= 1.0.5)
 LazyData: true
 URL: https://github.com/feiyoung/PRECAST
 BugReports: https://github.com/feiyoung/PRECAST/issues
@@ -33,6 +34,6 @@ LinkingTo: Rcpp, RcppArmadillo
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2025-03-27 11:34:27 UTC; Liuxianju
+Packaged: 2025-10-01 13:11:32 UTC; 10297
 Repository: CRAN
-Date/Publication: 2025-03-27 15:20:02 UTC
+Date/Publication: 2025-10-01 14:50:08 UTC

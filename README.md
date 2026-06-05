@@ -110,6 +110,11 @@ For an example of typical PRECAST usage, please see our [Package Website](https:
 
 # NEWs
 
+PRECAST version 1.9 (2026-06-04): Resolve the strong dependence on `harmony` package.
+ 
+
+PRECAST version 1.8 (2025-12-14): Resolve the issue stemming from the deprecated `slot` parameter in the `GetAssayData()` function within the `SeuratObject` package.
+ 
 PRECAST version 1.7 (2025-08-31)
 * Improve the computational efficiency in Cpp and initialization method. Now, our algorithm supports both "kmeans" and "mclust" initialization schemes.
 

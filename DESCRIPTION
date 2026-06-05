@@ -2,8 +2,8 @@ Package: PRECAST
 Type: Package
 Title: Embedding and Clustering with Alignment for Spatial Omics
         Datasets
-Version: 1.8
-Date: 2025-12-14
+Version: 1.9
+Date: 2026-06-05
 Authors@R: 
     c(person(given = "Wei",
              family = "Liu",
@@ -24,8 +24,8 @@ License: GPL-3
 Depends: parallel, gtools, R (>= 4.0.0)
 Imports: MASS, Matrix, mclust, methods, purrr, utils, Seurat, irlba,
         cowplot, patchwork, scater, pbapply, ggthemes, dplyr, ggplot2,
-        stats, harmony, DR.SC, scales, ggpubr, graphics, colorspace,
-        Rcpp (>= 1.0.5)
+        stats, DR.SC, scales, ggpubr, graphics, colorspace, Rcpp (>=
+        1.0.5)
 LazyData: true
 URL: https://github.com/feiyoung/PRECAST
 BugReports: https://github.com/feiyoung/PRECAST/issues
@@ -33,8 +33,8 @@ Suggests: knitr, rmarkdown
 LinkingTo: Rcpp, RcppArmadillo
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.0.0
 NeedsCompilation: yes
-Packaged: 2025-12-15 08:30:46 UTC; 10297
+Packaged: 2026-06-05 09:29:56 UTC; 10297
 Repository: CRAN
-Date/Publication: 2025-12-15 09:30:02 UTC
+Date/Publication: 2026-06-05 10:10:02 UTC

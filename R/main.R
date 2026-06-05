@@ -1,17 +1,28 @@
 # library(pkgdown)
 # pkgdown::build_site()
 # pkgdown::build_reference()
+# devtools::run_examples()
 # build_home()
 # build_article(name="PRECAST.DLPFC4") # Solely compile one article for updating.
 # build_article(name="PRECAST.BreastCancer")
 # build_article(name="PRECAST.Simu")
 # build_article(name="PRECAST.DLPFC")
-# R CMD check --as-cran PRECAST_1.8.tar.gz
+# R CMD check --as-cran PRECAST_1.9.tar.gz
 # devtools::check_win_release()
 # setwd("D:\\Working\\Research paper\\GithubCode\\PRECAST\\vignettes_data")
 
 
 # Basic functions ---------------------------------------------------------
+use_harmony <- function() {
+  if (!isNamespaceLoaded("harmony") && 
+      length(find.package("harmony", quiet = TRUE)) == 0) {
+    warning("Package 'harmony' is required but not installed. ",
+            "Install it with: remotes::install_github('immunogenomics/harmony')")
+    return(FALSE)
+  }
+  TRUE
+}
+
 .logDiffTime <- function(main = "", t1 = NULL, verbose = TRUE, addHeader = FALSE,
                          t2 = Sys.time(), units = "mins", header = "*****",
                          tail = "elapsed.", precision = 3){
@@ -254,7 +265,19 @@ ICM.EM <- function(XList, q, K, AdjList=NULL,  Adjlist_car=NULL, posList = NULL,
   W0 <- princ1$loadings
   sampleID <- get_sampleID(XList)
   if(r_max >1){
-    hZ <- RunHarmony(princ1$PCs, meta_data=data.frame(batch=factor(sampleID)), vars_use='batch', verbose=FALSE)
+    if (use_harmony()) {
+      hZ <- getFromNamespace("RunHarmony", "harmony")(
+        princ1$PCs, 
+        meta_data = data.frame(batch = factor(sampleID)), 
+        vars_use = 'batch', 
+        verbose = FALSE
+      )
+    } else {
+      warning("harmony not installed. Skipping batch correction. Please install harmony for accurate embedding and spatial clustering: remotes::install_github('immunogenomics/harmony')")
+      hZ <- princ1$PCs  # 直接返回原PC，不做矫正
+      ## stop("Please install harmony first! Using remotes::install_github('immunogenomics/harmony')")
+    }
+    
   }else{
     hZ <- princ1$PCs
   }
@@ -388,8 +411,25 @@ idrsc <- function(XList, q, K, AdjList=NULL,  Adjlist_car=NULL, posList = NULL, 
   }
   W0 <- princ1$loadings
   sampleID <- get_sampleID(XList[[1]])
+  # if(r_max >1){
+  #   hZ <- RunHarmony(princ1$PCs, meta_data=data.frame(batch=factor(sampleID)), vars_use='batch', verbose=FALSE)
+  # }else{
+  #   hZ <- princ1$PCs
+  # }
   if(r_max >1){
-    hZ <- RunHarmony(princ1$PCs, meta_data=data.frame(batch=factor(sampleID)), vars_use='batch', verbose=FALSE)
+    if (use_harmony()) {
+      hZ <- getFromNamespace("RunHarmony", "harmony")(
+        princ1$PCs, 
+        meta_data = data.frame(batch = factor(sampleID)), 
+        vars_use = 'batch', 
+        verbose = FALSE
+      )
+    }else {
+      warning("harmony not installed. Skipping batch correction. Please install harmony for accurate embedding and spatial clustering: remotes::install_github('immunogenomics/harmony')")
+      hZ <- princ1$PCs  # 直接返回原PC，不做矫正
+      ## stop("Please install harmony first! Using remotes::install_github('immunogenomics/harmony')")
+    }
+    
   }else{
     hZ <- princ1$PCs
   }

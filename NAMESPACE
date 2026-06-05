@@ -47,8 +47,6 @@ importFrom(mclust, Mclust, mclustBIC)
 importFrom(ggpubr, ggarrange)
 importFrom(colorspace, adjust_transparency)
 importFrom(irlba, irlba)
-importFrom(harmony, RunHarmony)
-#export(Mclust, mclustBIC)
 
 importFrom(Seurat, CreateDimReducObject, NormalizeData, CreateSeuratObject, FindVariableFeatures,  
            "Idents<-", Idents, DefaultAssay, "DefaultAssay<-", ScaleData, GetAssayData,
